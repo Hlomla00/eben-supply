@@ -1,8 +1,5 @@
-@extends('layouts.app')
+<x-layouts.app title="Checkout">
 {{-- Matuma Malapile 222904267 | Group KN3 --}}
-@section('title', 'Checkout')
-
-@section('content')
 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
     <div class="mb-8">
@@ -164,4 +161,4 @@
     }));
 </script>
 @endpush
-@endsection
+</x-layouts.app>
