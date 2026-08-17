@@ -1,8 +1,5 @@
-@extends('layouts.app')
+<x-layouts.app title="Shopping Cart">
 {{-- Hlomla Magopeni 218070349 | Group KN3 --}}
-@section('title', 'Shopping Cart')
-
-@section('content')
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
     <div class="mb-8">
@@ -111,4 +108,4 @@
         </div>
     @endif
 </div>
-@endsection
+</x-layouts.app>
