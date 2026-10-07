@@ -1,8 +1,5 @@
-@extends('layouts.admin')
+<x-layouts.admin title="Dashboard">
 {{-- Matuma Malapile 222904267 | Group KN3 --}}
-@section('title', 'Dashboard')
-
-@section('content')
 
 {{-- Stat cards --}}
 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
@@ -114,4 +111,4 @@
         </table>
     </div>
 </div>
-@endsection
+</x-layouts.admin>

@@ -1,17 +1,12 @@
-@extends('layouts.app')
+<x-layouts.app title="Home">
 {{-- Dumisane Madondo 230949703 | Group KN3 --}}
-@section('title', 'Home')
-
-@section('content')
 
 {{-- ── Hero ── --}}
 <section class="relative min-h-[90vh] flex items-center overflow-hidden bg-[#F5F5F5]">
     <div class="absolute inset-0">
         <img src="{{ asset('images/products/background image.jpeg') }}"
              alt="Eben Supply" class="w-full h-full object-cover object-center">
-        {{-- Mobile: strong solid overlay so text is always readable --}}
         <div class="absolute inset-0 bg-white/85 sm:bg-transparent"></div>
-        {{-- Desktop: directional gradient --}}
         <div class="absolute inset-0 hidden sm:block bg-gradient-to-r from-white/92 via-white/65 to-transparent"></div>
     </div>
 
@@ -229,4 +224,4 @@
     </div>
 </section>
 
-@endsection
+</x-layouts.app>

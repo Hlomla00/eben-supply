@@ -1,8 +1,5 @@
-@extends('layouts.admin')
+<x-layouts.admin title="Inventory">
 {{-- Hillay Itlhabanyeng 230777465 | Group KN3 --}}
-@section('title', 'Inventory')
-
-@section('content')
 <form action="{{ route('admin.inventory.update') }}" method="POST">
     @csrf
 
@@ -75,4 +72,4 @@
         <button type="submit" class="btn-primary text-sm px-8 py-3">Save All Changes</button>
     </div>
 </form>
-@endsection
+</x-layouts.admin>

@@ -1,8 +1,5 @@
-@extends('layouts.admin')
-{{-- Phelo Mguca — 2330707726 | Group KN3}}
-@section('title', 'Orders')
-
-@section('content')
+<x-layouts.admin title="Orders">
+{{-- Dumisane Madondo 230949703 | Group KN3 --}}
 
 {{-- Status filter tabs --}}
 <div class="flex flex-wrap gap-2 mb-6">
@@ -81,4 +78,4 @@
 </div>
 
 <div class="mt-6">{{ $orders->links() }}</div>
-@endsection
+</x-layouts.admin>

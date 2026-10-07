@@ -1,8 +1,5 @@
-@extends('layouts.app')
+<x-layouts.app title="Secure Payment">
 {{-- Hlomla Magopeni 218070349 - Eben Supply | Group KN3 --}}
-@section('title', 'Secure Payment')
-
-@section('content')
 <div class="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
     <div class="mb-8 text-center">
@@ -127,4 +124,4 @@
         </a>
     </div>
 </div>
-@endsection
+</x-layouts.app>

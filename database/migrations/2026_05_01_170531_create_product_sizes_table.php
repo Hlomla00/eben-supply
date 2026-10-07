@@ -11,11 +11,10 @@ return new class extends Migration
         Schema::create('product_sizes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-            $table->string('size'); // e.g., 'S', 'M', 'L', 'XL'
+            $table->string('size');
             $table->integer('stock_quantity')->default(0);
             $table->timestamps();
 
-            // Enforces that a product cannot have duplicate entries for the same size
             $table->unique(['product_id', 'size']);
         });
     }

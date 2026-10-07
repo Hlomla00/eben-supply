@@ -17,7 +17,9 @@ class HomeController extends Controller
             $pick = Product::featured()
                 ->where('stock_quantity', '>', 0)
                 ->where('category', $cat)
-                ->with('sizes')
+                ->with(['sizes' => function ($query) {
+                    $query->select('id', 'product_id', 'size', 'stock_quantity');
+                }])
                 ->inRandomOrder()
                 ->first();
             if ($pick) $pinned->push($pick);
@@ -27,7 +29,9 @@ class HomeController extends Controller
         $extras = Product::featured()
             ->where('stock_quantity', '>', 0)
             ->whereNotIn('id', $pinnedIds)
-            ->with('sizes')
+            ->with(['sizes' => function ($query) {
+                $query->select('id', 'product_id', 'size', 'stock_quantity');
+            }])
             ->inRandomOrder()
             ->take(6 - $pinned->count())
             ->get();
