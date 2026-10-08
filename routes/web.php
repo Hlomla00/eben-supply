@@ -55,9 +55,9 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/admin-dashboard', [Admin\DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin-dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-   /* Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
+   Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
     Route::get('/products/create', [AdminProductController::class, 'create'])->name('products.create');
     Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');
     Route::get('/products/{product}/edit', [AdminProductController::class, 'edit'])->name('products.edit');
@@ -72,7 +72,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory');
     Route::post('/inventory', [InventoryController::class, 'update'])->name('inventory.update');
-    */
+    
 });
 
 require __DIR__.'/auth.php';

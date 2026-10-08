@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-{{-- Phelo Mguca — 2330707726 | Group KN3}}
+{{-- Phelo Mguca — 2330707726 | Group KN3 --}}
 @section('title', 'Add Product')
 
 @section('content')

@@ -12,7 +12,13 @@ class InventoryController extends Controller
 {
     public function index()
     {
+        $products = Product::with('sizes')->orderBy('name')->get();
+
         return view('admin.inventory.index', compact('products'));
+    }
+
+    public function update(Request $request)
+    {
         $request->validate([
             'stock'    => 'required|array',
             'stock.*'  => 'integer|min:0',
