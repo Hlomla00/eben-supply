@@ -4,13 +4,13 @@
 {{-- Status filter tabs --}}
 <div class="flex flex-wrap gap-2 mb-6">
     <a href="{{ route('admin.orders.index') }}"
-       class="px-4 py-1.5 text-xs font-heading font-bold rounded-full transition-colors
+       class="px-4 py-2 text-xs font-heading font-bold rounded-full transition-colors
            {{ !request('status') ? 'bg-[#333333] text-white' : 'bg-white text-stone-400 border border-stone-200 hover:border-[#D4C7B0] hover:text-[#333333]' }}">
         All Orders
     </a>
     @foreach($statuses as $s)
         <a href="{{ route('admin.orders.index', ['status' => $s]) }}"
-           class="px-4 py-1.5 text-xs font-heading font-bold rounded-full transition-colors capitalize
+           class="px-4 py-2 text-xs font-heading font-bold rounded-full transition-colors capitalize
                {{ request('status') === $s ? 'bg-[#333333] text-white' : 'bg-white text-stone-400 border border-stone-200 hover:border-[#D4C7B0] hover:text-[#333333]' }}">
             {{ ucfirst($s) }}
         </a>
@@ -62,7 +62,7 @@
                         <td class="px-6 py-4 text-stone-400 text-xs">{{ $order->created_at->format('d M Y') }}</td>
                         <td class="px-6 py-4 text-right">
                             <a href="{{ route('admin.orders.show', $order) }}"
-                               class="text-xs font-semibold text-stone-400 hover:text-[#333333] transition-colors">
+                               class="inline-block px-2 py-2 text-xs font-semibold text-stone-400 hover:text-[#333333] transition-colors">
                                 View
                             </a>
                         </td>

@@ -75,7 +75,7 @@
             @foreach($order->items as $item)
                 <div class="flex items-center gap-4 pb-4 border-b border-stone-100 last:border-0 last:pb-0">
                     <div class="w-16 h-16 rounded-xl overflow-hidden bg-[#F5F5F5] flex-shrink-0">
-                        <img src="{{ asset($item->product->image_path ?: 'images/products/placeholder.jpg') }}" alt="" class="w-full h-full object-cover">
+                        <img loading="lazy" decoding="async" src="{{ asset($item->product->image_path ?: 'images/products/placeholder.jpg') }}" alt="" class="w-full h-full object-cover">
                     </div>
                     <div class="flex-1">
                         <p class="font-heading font-semibold text-sm text-[#333333]">{{ $item->product->name }}</p>

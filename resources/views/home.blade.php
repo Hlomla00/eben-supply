@@ -85,7 +85,7 @@
                data-reveal style="transition-delay: {{ $i * 80 }}ms">
                 <div class="aspect-square product-img-wrap bg-[#F5F5F5]">
                     <img src="{{ asset($product->image_path ?: 'images/products/placeholder.jpg') }}"
-                         alt="{{ $product->name }}">
+                         loading="lazy" decoding="async" alt="{{ $product->name }}">
                 </div>
                 <div class="p-5">
                     <div class="flex items-center justify-between mb-3">
@@ -169,9 +169,9 @@
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-4" data-reveal>
-                <img src="{{ asset('images/products/models.jpeg') }}"
+                <img loading="lazy" decoding="async" src="{{ asset('images/products/models.jpeg') }}"
                      alt="Eben Supply models" class="w-full aspect-square object-cover rounded-xl shadow-soft">
-                <img src="{{ asset('images/products/street model.jpeg') }}"
+                <img loading="lazy" decoding="async" src="{{ asset('images/products/street model.jpeg') }}"
                      alt="Street style" class="w-full aspect-square object-cover rounded-xl shadow-soft mt-8">
             </div>
         </div>

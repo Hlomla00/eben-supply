@@ -7,11 +7,11 @@
 
     {{-- Breadcrumb --}}
     <nav class="flex items-center gap-2 text-xs text-stone-400 mb-8 font-heading overflow-x-auto whitespace-nowrap">
-        <a href="{{ route('home') }}" class="hover:text-[#333333] transition-colors">Home</a>
+        <a href="{{ route('home') }}" class="inline-block px-1 py-2 hover:text-[#333333] transition-colors">Home</a>
         <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"/></svg>
-        <a href="{{ route('products.index') }}" class="hover:text-[#333333] transition-colors">Shop</a>
+        <a href="{{ route('products.index') }}" class="inline-block px-1 py-2 hover:text-[#333333] transition-colors">Shop</a>
         <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"/></svg>
-        <a href="{{ route('products.index', ['category' => $product->category]) }}" class="hover:text-[#333333] transition-colors capitalize">
+        <a href="{{ route('products.index', ['category' => $product->category]) }}" class="inline-block px-1 py-2 hover:text-[#333333] transition-colors capitalize">
             {{ ['tshirt'=>'T-Shirts','cap'=>'Caps','tote_bag'=>'Tote Bags'][$product->category] ?? $product->category }}
         </a>
         <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"/></svg>
@@ -78,7 +78,7 @@
                         <div>
                             <div class="flex items-center justify-between mb-3">
                                 <p class="form-label mb-0">Select Size</p>
-                                <button type="button" id="size-guide-btn" class="text-xs text-[#A3A380] hover:text-[#333333] font-medium underline underline-offset-2 transition-colors">Size Guide</button>
+                                <button type="button" id="size-guide-btn" class="py-2 text-xs text-[#A3A380] hover:text-[#333333] font-medium underline underline-offset-2 transition-colors">Size Guide</button>
                             </div>
                             <input type="hidden" name="size" id="selected-size" value="{{ $product->sizes->first(fn($s) => $s->stock_quantity > 0)?->size }}">
                             <div class="flex flex-wrap gap-2" data-size-group>
@@ -151,7 +151,7 @@
                 <h2 class="font-heading font-bold text-2xl text-[#333333]">You Might Also Like</h2>
             </div>
             <a href="{{ route('products.index', ['category' => $product->category]) }}"
-               class="text-sm font-semibold text-[#A3A380] hover:text-[#333333] transition-colors font-heading">
+               class="inline-block py-2 text-sm font-semibold text-[#A3A380] hover:text-[#333333] transition-colors font-heading">
                 View All →
             </a>
         </div>
@@ -164,7 +164,7 @@
                 <a href="{{ route('products.show', $rel) }}" class="card card-hover group overflow-hidden block">
                     <div class="aspect-square product-img-wrap bg-[#F5F5F5]">
                         <img src="{{ asset($rel->image_path ?: 'images/products/placeholder.jpg') }}"
-                             alt="{{ $rel->name }}">
+                             loading="lazy" decoding="async" alt="{{ $rel->name }}">
                     </div>
                     <div class="p-4">
                         <h3 class="font-heading font-semibold text-sm text-[#333333] group-hover:text-[#A3A380] transition-colors leading-snug mb-1 line-clamp-2">{{ $rel->name }}</h3>

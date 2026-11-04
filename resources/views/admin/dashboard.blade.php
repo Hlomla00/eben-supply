@@ -64,7 +64,7 @@
 <div class="bg-white rounded-xl border border-stone-100 shadow-soft overflow-hidden">
     <div class="px-6 py-4 border-b border-stone-100 flex items-center justify-between">
         <h2 class="font-heading font-bold text-sm text-[#333333]">Recent Orders</h2>
-        <a href="{{ route('admin.orders.index') }}" class="text-xs font-semibold text-[#A3A380] hover:text-[#333333] transition-colors font-heading">View All →</a>
+        <a href="{{ route('admin.orders.index') }}" class="inline-block py-2 text-xs font-semibold text-[#A3A380] hover:text-[#333333] transition-colors font-heading">View All →</a>
     </div>
     <div class="overflow-x-auto">
         <table class="w-full text-sm">

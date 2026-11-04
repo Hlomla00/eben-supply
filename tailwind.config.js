@@ -6,6 +6,14 @@ import forms from '@tailwindcss/forms';
 export default {
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
+        // Flux component templates: flux.css declares them with Tailwind 4's
+        // @source, which Tailwind 3 ignores, so list them here or a build on
+        // an empty view cache (Docker, a fresh clone) misses their classes.
+        // Only the components the views use (button, dropdown, input, menu,
+        // toast) and the shared parts they render.
+        './vendor/livewire/flux/stubs/resources/views/flux/{button,input,menu,toast,icon}/**/*.blade.php',
+        './vendor/livewire/flux/stubs/resources/views/flux/{button-or-link,button-or-div,button-or-link-pure,dropdown,separator,with-field,with-tooltip,field,label,error,description,tooltip}.blade.php',
+        './vendor/livewire/flux/stubs/resources/views/flux/tooltip/**/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
         './resources/js/**/*.js',

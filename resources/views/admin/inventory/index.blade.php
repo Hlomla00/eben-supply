@@ -17,7 +17,7 @@
             <div class="bg-white rounded-xl border {{ $isLow ? 'border-amber-200' : 'border-stone-100' }} shadow-soft p-5">
                 <div class="flex items-center gap-4 mb-4">
                     <div class="w-14 h-14 rounded-xl overflow-hidden bg-[#F5F5F5] flex-shrink-0">
-                        <img src="{{ asset($product->image_path ?: 'images/products/placeholder.jpg') }}"
+                        <img loading="lazy" decoding="async" src="{{ asset($product->image_path ?: 'images/products/placeholder.jpg') }}"
                              alt="" class="w-full h-full object-cover">
                     </div>
                     <div class="flex-1 min-w-0">
