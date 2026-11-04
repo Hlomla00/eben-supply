@@ -76,12 +76,7 @@
             </div>
 
             {{-- Flash messages --}}
-            @if(session('success'))
-                <flux:toast variant="success">{{ session('success') }}</flux:toast>
-            @endif
-            @if(session('error'))
-                <flux:toast variant="danger">{{ session('error') }}</flux:toast>
-            @endif
+            <x-flash-toast />
 
             <main class="flex-1 px-4 sm:px-8 py-8">
                 @yield('content', $slot ?? '')

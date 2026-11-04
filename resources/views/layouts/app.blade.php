@@ -137,12 +137,7 @@
     </header>
 
     {{-- ── Toast flash messages — Flux toast replaces the custom fade/dismiss JS ── --}}
-    @if(session('success'))
-        <flux:toast variant="success">{{ session('success') }}</flux:toast>
-    @endif
-    @if(session('error'))
-        <flux:toast variant="danger">{{ session('error') }}</flux:toast>
-    @endif
+    <x-flash-toast />
 
     {{-- Main content --}}
     <main class="flex-1">

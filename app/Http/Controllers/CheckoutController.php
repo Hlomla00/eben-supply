@@ -3,9 +3,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\InsufficientStockException;
 use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
+use App\Models\ProductSize;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -84,41 +87,76 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index');
         }
 
-        DB::transaction(function () use ($pending, $cartItems) {
-            $order = Order::create([
-                'user_id'          => auth()->id(),
-                'status'           => 'pending',
-                'fulfillment'      => $pending['fulfillment'],
-                'total_amount'     => $pending['total'],
-                'contact_name'     => $pending['contact_name'],
-                'contact_phone'    => $pending['contact_phone'],
-                'contact_email'    => $pending['contact_email'],
-                'delivery_address' => $pending['delivery_address'],
-                'payment_reference'=> 'ES-' . strtoupper(uniqid()),
-            ]);
-
-            foreach ($cartItems as $item) {
-                OrderItem::create([
-                    'order_id'   => $order->id,
-                    'product_id' => $item->product_id,
-                    'size'       => $item->size,
-                    'quantity'   => $item->quantity,
-                    'unit_price' => $item->product->price,
-                ]);
-            }
-
-            // Clear cart
-            if (auth()->check()) {
-                CartItem::where('user_id', auth()->id())->delete();
-            } else {
-                CartItem::where('session_id', session()->getId())->delete();
-            }
-
-            session(['last_order_id' => $order->id]);
-        });
+        try {
+            DB::transaction(function () use ($pending, $cartItems) {
+                $this->deductStock($cartItems);
+                $this->createOrder($pending, $cartItems);
+            });
+        } catch (InsufficientStockException $e) {
+            return redirect()->route('cart.index')->with('error', $e->getMessage());
+        }
 
         session()->forget('pending_order');
         return redirect()->route('order.confirmation');
+    }
+
+    // Locks each product so concurrent orders can't oversell, then takes the
+    // ordered quantity off the size row (if any) and the product total.
+    private function deductStock($cartItems): void
+    {
+        foreach ($cartItems as $item) {
+            $product = Product::whereKey($item->product_id)->lockForUpdate()->firstOrFail();
+
+            if ($item->size !== null) {
+                $size = ProductSize::where('product_id', $product->id)
+                    ->where('size', $item->size)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$size || $size->stock_quantity < $item->quantity) {
+                    throw new InsufficientStockException("Sorry, {$product->name} ({$item->size}) no longer has enough stock. Please update your cart.");
+                }
+                $size->decrement('stock_quantity', $item->quantity);
+            } elseif ($product->stock_quantity < $item->quantity) {
+                throw new InsufficientStockException("Sorry, {$product->name} no longer has enough stock. Please update your cart.");
+            }
+
+            $product->decrement('stock_quantity', $item->quantity);
+        }
+    }
+
+    private function createOrder(array $pending, $cartItems): void
+    {
+        $order = Order::create([
+            'user_id'          => auth()->id(),
+            'status'           => 'pending',
+            'fulfillment'      => $pending['fulfillment'],
+            'total_amount'     => $pending['total'],
+            'contact_name'     => $pending['contact_name'],
+            'contact_phone'    => $pending['contact_phone'],
+            'contact_email'    => $pending['contact_email'],
+            'delivery_address' => $pending['delivery_address'],
+            'payment_reference'=> 'ES-' . strtoupper(uniqid()),
+        ]);
+
+        foreach ($cartItems as $item) {
+            OrderItem::create([
+                'order_id'   => $order->id,
+                'product_id' => $item->product_id,
+                'size'       => $item->size,
+                'quantity'   => $item->quantity,
+                'unit_price' => $item->product->price,
+            ]);
+        }
+
+        // Clear cart
+        if (auth()->check()) {
+            CartItem::where('user_id', auth()->id())->delete();
+        } else {
+            CartItem::where('session_id', session()->getId())->delete();
+        }
+
+        session(['last_order_id' => $order->id]);
     }
 
     public function confirmation()

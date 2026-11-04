@@ -47,6 +47,17 @@ class Product extends Model
         return 'in_stock';
     }
 
+    // Units available for a size, or for the whole product if it has no sizes.
+    // Returns 0 for a size the product doesn't stock.
+    public function availableStock(?string $size): int
+    {
+        if ($this->sizes->isEmpty()) {
+            return $size === null ? (int) $this->stock_quantity : 0;
+        }
+
+        return (int) ($this->sizes->firstWhere('size', $size)?->stock_quantity ?? 0);
+    }
+
     public function getCategoryLabelAttribute(): string
     {
         return match($this->category) {

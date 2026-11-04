@@ -30,8 +30,9 @@
                                 @csrf
                                 <input type="hidden" name="cart_item_id" value="{{ $item->id }}">
                                 <select name="quantity" onchange="this.form.submit()"
-                                        class="border border-stone-200 rounded-lg text-sm text-[#333333] px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#D4C7B0] bg-white font-heading">
-                                    @for($i = 1; $i <= 10; $i++)
+                                        class="border border-stone-200 rounded-lg text-sm text-[#333333] pl-3 pr-9 py-1.5 min-w-[4.5rem] focus:outline-none focus:ring-2 focus:ring-[#D4C7B0] bg-white font-heading">
+                                    @php $maxQty = max($item->quantity, min(10, $item->product->availableStock($item->size))); @endphp
+                                    @for($i = 1; $i <= $maxQty; $i++)
                                         <option value="{{ $i }}" {{ $item->quantity == $i ? 'selected' : '' }}>{{ $i }}</option>
                                     @endfor
                                 </select>
