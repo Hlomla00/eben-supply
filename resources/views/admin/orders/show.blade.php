@@ -1,7 +1,7 @@
 <x-layouts.admin title="Order Detail">
 {{-- Dumisane Madondo 230949703 | Group KN3 --}}
 <div class="max-w-3xl">
-    <a href="{{ route('admin.orders.index') }}" class="flex items-center gap-1 text-sm text-stone-400 hover:text-[#333333] mb-6 inline-flex transition-colors font-medium">
+    <a href="{{ route('admin.orders.index') }}" class="items-center gap-1 py-2 text-sm text-stone-400 hover:text-[#333333] mb-4 inline-flex transition-colors font-medium">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 12H5m7-7-7 7 7 7"/></svg>
         Back to Orders
     </a>

@@ -62,7 +62,7 @@
                         <td class="px-6 py-4 text-stone-400 text-xs">{{ $order->created_at->format('d M Y') }}</td>
                         <td class="px-6 py-4 text-right">
                             <a href="{{ route('admin.orders.show', $order) }}"
-                               class="text-xs font-semibold text-stone-400 hover:text-[#333333] transition-colors">
+                               class="inline-block px-2 py-2 text-xs font-semibold text-stone-400 hover:text-[#333333] transition-colors">
                                 View
                             </a>
                         </td>
