@@ -72,7 +72,7 @@
                     {{-- Image + hover actions --}}
                     <a href="{{ route('products.show', $product) }}" class="block relative aspect-square product-img-wrap bg-[#F5F5F5]">
                         <img src="{{ asset($product->image_path ?: 'images/products/placeholder.jpg') }}"
-                             alt="{{ $product->name }}">
+                             loading="{{ $i < 4 ? 'eager' : 'lazy' }}" decoding="async" alt="{{ $product->name }}">
                         {{-- Hover overlay --}}
                         <div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
                             <span class="bg-white text-[#333333] text-xs font-heading font-bold px-4 py-2 rounded-full shadow-soft translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
@@ -99,7 +99,7 @@
                             @endif
                         </div>
 
-                        <a href="{{ route('products.show', $product) }}">
+                        <a href="{{ route('products.show', $product) }}" class="block py-1.5">
                             <h3 class="font-heading font-semibold text-sm text-[#333333] hover:text-[#A3A380] transition-colors leading-snug mb-2 line-clamp-2 flex-1">
                                 {{ $product->name }}
                             </h3>
@@ -108,7 +108,7 @@
                         <div class="flex items-center justify-between mt-auto pt-2">
                             <span class="font-heading font-black text-base text-[#333333]">R{{ number_format($product->price, 2) }}</span>
                             <a href="{{ route('products.show', $product) }}"
-                               class="w-8 h-8 flex items-center justify-center rounded-full bg-[#F5F5F5] hover:bg-[#333333] hover:text-white transition-all duration-200 text-[#A3A380]">
+                               class="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full bg-[#F5F5F5] hover:bg-[#333333] hover:text-white transition-all duration-200 text-[#A3A380]">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>
                             </a>
                         </div>

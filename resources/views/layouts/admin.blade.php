@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', $title ?? 'Admin') — Eben Supply</title>
 
+    @include('partials.fonts')
     @fluxAppearance
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -66,7 +67,7 @@
             {{-- Mobile top bar (sidebar is desktop-only above) --}}
             <header class="lg:hidden bg-[#333333] text-white h-14 flex items-center justify-between px-4">
                 <span class="font-black text-sm tracking-widest font-heading uppercase">Eben Supply Admin</span>
-                <a href="{{ route('home') }}" class="text-xs text-white/60 hover:text-white">Store →</a>
+                <a href="{{ route('home') }}" class="inline-block py-2 text-xs text-white/60 hover:text-white">Store →</a>
             </header>
 
             {{-- Page header --}}

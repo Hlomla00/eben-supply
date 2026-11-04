@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="max-w-2xl">
-    <a href="{{ route('admin.products.index') }}" class="flex items-center gap-1 text-sm text-stone-400 hover:text-[#333333] mb-6 inline-flex transition-colors font-medium">
+    <a href="{{ route('admin.products.index') }}" class="items-center gap-1 py-2 text-sm text-stone-400 hover:text-[#333333] mb-4 inline-flex transition-colors font-medium">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 12H5m7-7-7 7 7 7"/></svg>
         Back to Products
     </a>
@@ -46,7 +46,7 @@
                     @error('price')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div class="flex items-end pb-1">
-                    <label class="flex items-center gap-3 cursor-pointer">
+                    <label class="flex items-center gap-3 py-2 cursor-pointer">
                         <input type="checkbox" name="is_featured" value="1" {{ old('is_featured', $product->is_featured) ? 'checked' : '' }} class="w-4 h-4 accent-[#333333] rounded">
                         <span class="text-sm font-medium text-stone-600">Featured</span>
                     </label>

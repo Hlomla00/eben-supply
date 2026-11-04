@@ -81,7 +81,7 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-lg overflow-hidden bg-[#F5F5F5] flex-shrink-0">
-                                        <img src="{{ asset($item->product->image_path ?: 'images/products/placeholder.jpg') }}"
+                                        <img loading="lazy" decoding="async" src="{{ asset($item->product->image_path ?: 'images/products/placeholder.jpg') }}"
                                              alt="" class="w-full h-full object-cover">
                                     </div>
                                     <span class="font-medium text-[#333333]">{{ $item->product->name }}</span>
