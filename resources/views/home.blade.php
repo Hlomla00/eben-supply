@@ -41,13 +41,14 @@
 {{-- ── Category strip ── --}}
 <section class="border-y border-stone-100 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div class="grid grid-cols-3 gap-4 md:gap-8 max-w-xl mx-auto">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-8 max-w-2xl mx-auto">
             @foreach([
                 ['tshirt',   'T-Shirts',  'M9 3H5L2 8v1h3v12h14V9h3V8l-3-5h-4m-6 0v4m6-4v4m-6 0h6'],
                 ['cap',      'Caps',      'M12 4C8 4 5 6.5 4 10h16c-1-3.5-4-6-8-6zM4 10v3h16v-3M4 13l2 5h12l2-5'],
                 ['tote_bag', 'Tote Bags', 'M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0'],
+                ['kids',     'Kids',      'M12 7a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8 22v-6l-2-5 6-2 6 2-2 5v6'],
             ] as [$cat, $label, $path])
-            <a href="{{ route('products.index', ['category' => $cat]) }}"
+            <a href="{{ $cat === 'kids' ? route('kids.index') : route('products.index', ['category' => $cat]) }}"
                class="group flex flex-col items-center gap-3 p-5 rounded-xl hover:bg-[#F5F5F5] transition-all duration-200">
                 <div class="w-14 h-14 bg-[#F5F5F5] group-hover:bg-[#D4C7B0]/40 rounded-xl flex items-center justify-center transition-colors duration-200">
                     <svg class="w-7 h-7 text-[#A3A380] group-hover:text-[#333333] transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
@@ -83,9 +84,10 @@
             <a href="{{ route('products.show', $product) }}"
                class="card card-hover group overflow-hidden block"
                data-reveal style="transition-delay: {{ $i * 80 }}ms">
-                <div class="aspect-square product-img-wrap bg-[#F5F5F5]">
-                    <img src="{{ asset($product->image_path ?: 'images/products/placeholder.jpg') }}"
+                <div class="aspect-square product-img-wrap bg-[#F5F5F5] relative">
+                    <img src="{{ $product->image_url }}"
                          loading="lazy" decoding="async" alt="{{ $product->name }}">
+                    <x-product-badges :product="$product" />
                 </div>
                 <div class="p-5">
                     <div class="flex items-center justify-between mb-3">
@@ -100,7 +102,7 @@
                         {{ $product->name }}
                     </h3>
                     <div class="flex items-center justify-between">
-                        <span class="font-heading font-black text-lg text-[#333333]">R{{ number_format($product->price, 2) }}</span>
+                        <x-product-price :product="$product" price-class="text-lg" />
                         <span class="w-8 h-8 flex items-center justify-center rounded-full bg-[#F5F5F5] group-hover:bg-[#D4C7B0] transition-colors">
                             <svg class="w-4 h-4 text-[#A3A380] group-hover:text-[#333333] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>
                         </span>

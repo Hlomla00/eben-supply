@@ -5,7 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'Eben Supply' }} — Woodstock, Cape Town</title>
+    @php
+        $pageTitle = trim($__env->yieldContent('title')) ?: ($title ?? null);
+    @endphp
+    <title>{{ $pageTitle ? $pageTitle . ' | ' : '' }}Eben Supply — Woodstock, Cape Town</title>
 
     @include('partials.fonts')
     @fluxAppearance
@@ -36,12 +39,14 @@
                 </a>
 
                 {{-- Desktop centre nav --}}
-                <nav class="hidden lg:flex items-center gap-7 flex-1 justify-center">
+                <nav class="hidden lg:flex items-center gap-4 xl:gap-7 flex-1 justify-center">
                     <a href="{{ route('home') }}" class="nav-link pb-1 {{ request()->routeIs('home') ? 'nav-link-active' : '' }}">Home</a>
-                    <a href="{{ route('products.index') }}" class="nav-link pb-1 {{ request()->routeIs('products.*') ? 'nav-link-active' : '' }}">Shop</a>
-                    <a href="{{ route('products.index', ['category' => 'tshirt']) }}" class="nav-link pb-1 {{ request()->get('category') === 'tshirt' ? 'nav-link-active' : '' }}">T-Shirts</a>
-                    <a href="{{ route('products.index', ['category' => 'cap']) }}" class="nav-link pb-1 {{ request()->get('category') === 'cap' ? 'nav-link-active' : '' }}">Caps</a>
-                    <a href="{{ route('products.index', ['category' => 'tote_bag']) }}" class="nav-link pb-1 {{ request()->get('category') === 'tote_bag' ? 'nav-link-active' : '' }}">Tote Bags</a>
+                    <a href="{{ route('products.index') }}" class="nav-link pb-1 {{ request()->routeIs('products.index') && !request('category') ? 'nav-link-active' : '' }}">Shop</a>
+                    @foreach(\App\Models\Product::categoriesInUse() as $key)
+                        <a href="{{ route('products.index', ['category' => $key]) }}" class="nav-link pb-1 whitespace-nowrap {{ request()->routeIs('products.index') && request('category') === $key ? 'nav-link-active' : '' }}">{{ \App\Models\Product::categoryPluralLabel($key) }}</a>
+                    @endforeach
+                    <a href="{{ route('kids.index') }}" class="nav-link pb-1 {{ request()->routeIs('kids.index') ? 'nav-link-active' : '' }}">Kids</a>
+                    <a href="{{ route('sale.index') }}" class="nav-link pb-1 !text-red-600 {{ request()->routeIs('sale.index') ? 'nav-link-active' : '' }}">Sale</a>
                 </nav>
 
                 {{-- Right icons --}}
@@ -108,9 +113,9 @@
                             @foreach([
                                 ['Home', route('home')],
                                 ['Shop All', route('products.index')],
-                                ['T-Shirts', route('products.index', ['category'=>'tshirt'])],
-                                ['Caps', route('products.index', ['category'=>'cap'])],
-                                ['Tote Bags', route('products.index', ['category'=>'tote_bag'])],
+                                ...array_map(fn ($key) => [\App\Models\Product::categoryPluralLabel($key), route('products.index', ['category' => $key])], \App\Models\Product::categoriesInUse()),
+                                ['Kids', route('kids.index')],
+                                ['Sale', route('sale.index')],
                             ] as [$label, $href])
                                 <flux:menu.item href="{{ $href }}">{{ $label }}</flux:menu.item>
                             @endforeach
@@ -166,9 +171,11 @@
                 <div>
                     <h4 class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4 font-heading">Shop</h4>
                     <ul class="space-y-0 text-sm text-stone-300">
-                        <li><a href="{{ route('products.index', ['category' => 'tshirt']) }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">T-Shirts</a></li>
-                        <li><a href="{{ route('products.index', ['category' => 'cap']) }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">Caps</a></li>
-                        <li><a href="{{ route('products.index', ['category' => 'tote_bag']) }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">Tote Bags</a></li>
+                        @foreach(\App\Models\Product::categoriesInUse() as $key)
+                            <li><a href="{{ route('products.index', ['category' => $key]) }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">{{ \App\Models\Product::categoryPluralLabel($key) }}</a></li>
+                        @endforeach
+                        <li><a href="{{ route('kids.index') }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">Kids</a></li>
+                        <li><a href="{{ route('sale.index') }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">Sale</a></li>
                         <li><a href="{{ route('products.index') }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">All Products</a></li>
                     </ul>
                 </div>

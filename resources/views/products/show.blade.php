@@ -9,10 +9,16 @@
     <nav class="flex items-center gap-2 text-xs text-stone-400 mb-8 font-heading overflow-x-auto whitespace-nowrap">
         <a href="{{ route('home') }}" class="inline-block px-1 py-2 hover:text-[#333333] transition-colors">Home</a>
         <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"/></svg>
-        <a href="{{ route('products.index') }}" class="inline-block px-1 py-2 hover:text-[#333333] transition-colors">Shop</a>
-        <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"/></svg>
-        <a href="{{ route('products.index', ['category' => $product->category]) }}" class="inline-block px-1 py-2 hover:text-[#333333] transition-colors capitalize">
-            {{ ['tshirt'=>'T-Shirts','cap'=>'Caps','tote_bag'=>'Tote Bags'][$product->category] ?? $product->category }}
+        @unless($product->is_kids)
+            <a href="{{ route('products.index') }}" class="inline-block px-1 py-2 hover:text-[#333333] transition-colors">Shop</a>
+            <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"/></svg>
+        @endunless
+        @if($product->is_kids)
+            <a href="{{ route('kids.index') }}" class="inline-block px-1 py-2 hover:text-[#333333] transition-colors">Kids</a>
+            <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"/></svg>
+        @endif
+        <a href="{{ route($product->is_kids ? 'kids.index' : 'products.index', ['category' => $product->category]) }}" class="inline-block px-1 py-2 hover:text-[#333333] transition-colors capitalize">
+            {{ $product->category_plural_label }}
         </a>
         <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"/></svg>
         <span class="text-[#333333] font-medium truncate max-w-[180px] sm:max-w-xs">{{ $product->name }}</span>
@@ -34,7 +40,14 @@
             @endphp
 
             <div class="flex items-center gap-3 mb-4">
-                <span class="badge {{ $catBadges[$product->category] ?? '' }}">{{ $catLabels[$product->category] ?? $product->category }}</span>
+                @if($product->is_kids)
+                    <a href="{{ route('kids.index') }}" class="badge {{ $product->category_badge }}">{{ $product->category_label }}</a>
+                @else
+                    <span class="badge {{ $product->category_badge }}">{{ $product->category_label }}</span>
+                @endif
+                @if($product->isOnSale())
+                    <a href="{{ route('sale.index') }}" class="badge bg-red-600 text-white">Sale −{{ $product->sale_percent_off }}%</a>
+                @endif
                 @if($product->is_featured)
                     <span class="badge bg-[#D4C7B0] text-[#333333]">Featured</span>
                 @endif
@@ -44,9 +57,14 @@
                 {{ $product->name }}
             </h1>
 
-            <p class="font-heading font-black text-3xl text-[#333333] mb-4">
-                R{{ number_format($product->price, 2) }}
-            </p>
+            <div class="mb-4">
+                <x-product-price :product="$product" price-class="text-3xl" />
+                @if($product->isOnSale())
+                    <p class="text-xs font-semibold text-red-600 mt-1">
+                        Sale — save R{{ number_format($product->price - $product->current_price, 2) }} ({{ $product->sale_percent_off }}% off){{ $product->sale_ends_at ? ' · ends ' . $product->sale_ends_at->format('d M Y, H:i') : '' }}
+                    </p>
+                @endif
+            </div>
 
             {{-- Stock status --}}
             @if($product->stock_quantity === 0)
@@ -162,13 +180,14 @@
                     $catLabels = ['tshirt' => 'T-Shirt', 'cap' => 'Cap', 'tote_bag' => 'Tote Bag'];
                 @endphp
                 <a href="{{ route('products.show', $rel) }}" class="card card-hover group overflow-hidden block">
-                    <div class="aspect-square product-img-wrap bg-[#F5F5F5]">
-                        <img src="{{ asset($rel->image_path ?: 'images/products/placeholder.jpg') }}"
+                    <div class="aspect-square product-img-wrap bg-[#F5F5F5] relative">
+                        <img src="{{ $rel->image_url }}"
                              loading="lazy" decoding="async" alt="{{ $rel->name }}">
+                        <x-product-badges :product="$rel" />
                     </div>
                     <div class="p-4">
                         <h3 class="font-heading font-semibold text-sm text-[#333333] group-hover:text-[#A3A380] transition-colors leading-snug mb-1 line-clamp-2">{{ $rel->name }}</h3>
-                        <p class="font-heading font-black text-sm text-[#333333]">R{{ number_format($rel->price, 2) }}</p>
+                        <x-product-price :product="$rel" price-class="text-sm" />
                     </div>
                 </a>
             @endforeach
@@ -187,6 +206,24 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
+        @if($product->is_kids)
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b border-stone-100">
+                    <th class="text-left pb-3 font-heading font-bold text-xs text-stone-400 uppercase tracking-wider">Size (age)</th>
+                    <th class="text-left pb-3 font-heading font-bold text-xs text-stone-400 uppercase tracking-wider">Child's height (cm)</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-50">
+                @foreach([['2-3Y','92–98'],['4-5Y','104–110'],['6-7Y','116–122'],['8-9Y','128–134'],['10-11Y','140–146'],['12-13Y','152–158']] as [$s,$h])
+                <tr>
+                    <td class="py-3 font-heading font-bold text-[#333333]">{{ $s }}</td>
+                    <td class="py-3 text-stone-500">{{ $h }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+        @else
         <table class="w-full text-sm">
             <thead>
                 <tr class="border-b border-stone-100">
@@ -205,6 +242,7 @@
                 @endforeach
             </tbody>
         </table>
+        @endif
         <p class="text-xs text-stone-400 mt-4">Measurements are approximate. When in doubt, size up.</p>
     </div>
 </div>
