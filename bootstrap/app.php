@@ -14,6 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
         ]);
+
+        // Signed-in users who open /login or /register: admins go to the admin panel
+        $middleware->redirectUsersTo(fn (\Illuminate\Http\Request $request) =>
+            $request->user()?->isAdmin() ? route('admin.dashboard') : route('home'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

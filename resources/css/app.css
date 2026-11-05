@@ -1,5 +1,6 @@
 /* PRT362S — Eben Supply | Group KN3 */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Roboto:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+/* Google Fonts are linked from resources/views/partials/fonts.blade.php so they
+   load in parallel with this file instead of after it */
 @import '../../vendor/livewire/flux/dist/flux.css';
 
 @tailwind base;
@@ -17,6 +18,29 @@
 
     body {
         @apply bg-white text-[#333333] antialiased;
+    }
+
+    /* iOS Safari zooms into any field under 16px; keep phones at 16px */
+    @media (max-width: 639.98px) {
+        input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+        select,
+        textarea {
+            font-size: 16px !important;
+        }
+    }
+
+    /* Respect "reduce motion" in the device settings */
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+        [data-reveal] {
+            opacity: 1 !important;
+            transform: none !important;
+        }
     }
 }
 

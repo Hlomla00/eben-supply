@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Eben Supply' }} — Woodstock, Cape Town</title>
 
+    @include('partials.fonts')
     @fluxAppearance
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -14,22 +15,22 @@
 
     {{-- ── Announcement bar ── --}}
     <div class="bg-[#333333] text-white text-xs text-center py-2 tracking-wide font-heading">
-        🚚 Free store pickup in Woodstock &nbsp;·&nbsp; Nationwide delivery R60 &nbsp;·&nbsp;
-        <span class="hidden sm:inline">Pay securely via PayFast / Ozow</span>
+        🚚 Free store pickup in Woodstock &nbsp;·&nbsp; Nationwide delivery R60
+        <span class="hidden sm:inline">&nbsp;·&nbsp; Pay securely via PayFast / Ozow</span>
     </div>
 
     {{-- ── Navigation ── --}}
     <header class="bg-white border-b border-stone-100 sticky top-0 z-50 shadow-soft">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16 gap-4">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 gap-2 sm:gap-4">
 
                 {{-- Logo --}}
-                <a href="{{ route('home') }}" class="flex items-center gap-3 flex-shrink-0">
-                    <div class="w-9 h-9 rounded-full overflow-hidden ring-2 ring-[#D4C7B0]">
-                        <img src="{{ asset('images/products/logo.jpg') }}" alt="Eben Supply" class="w-full h-full object-cover">
+                <a href="{{ route('home') }}" class="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <div class="w-9 h-9 rounded-full overflow-hidden ring-2 ring-[#D4C7B0] flex-shrink-0">
+                        <img src="{{ asset('images/products/logo.jpg') }}" alt="Eben Supply" width="36" height="36" class="w-full h-full object-cover">
                     </div>
                     <div class="flex flex-col leading-none">
-                        <span class="font-black text-base tracking-widest text-[#333333] font-heading uppercase">Eben Supply</span>
+                        <span class="font-black text-sm tracking-wider sm:text-base sm:tracking-widest text-[#333333] font-heading uppercase whitespace-nowrap">Eben Supply</span>
                         <span class="text-[10px] text-[#A3A380] tracking-widest uppercase font-heading hidden sm:block">Woodstock, Cape Town</span>
                     </div>
                 </a>
@@ -44,7 +45,7 @@
                 </nav>
 
                 {{-- Right icons --}}
-                <div class="flex items-center gap-3 flex-shrink-0">
+                <div class="flex items-center gap-1 sm:gap-3 flex-shrink-0">
 
                     {{-- Search — Flux dropdown replaces the old slide-down div --}}
                     <flux:dropdown position="bottom" align="end">
@@ -58,13 +59,13 @@
                     </flux:dropdown>
 
                     {{-- Cart --}}
-                    <a href="{{ route('cart.index') }}" class="relative text-stone-400 hover:text-[#333333] transition-colors p-1" aria-label="Cart">
+                    <a href="{{ route('cart.index') }}" class="relative flex items-center justify-center w-10 h-10 rounded-lg text-stone-400 hover:text-[#333333] transition-colors" aria-label="Cart">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"/>
                         </svg>
                         @php $cartCount = \App\Http\Controllers\CartController::getCount(); @endphp
                         @if($cartCount > 0)
-                            <span id="cart-badge" class="absolute -top-0.5 -right-0.5 bg-[#D4C7B0] text-[#333333] text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center leading-none font-heading">{{ $cartCount }}</span>
+                            <span id="cart-badge" class="absolute top-1 right-1 bg-[#D4C7B0] text-[#333333] text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center leading-none font-heading">{{ $cartCount }}</span>
                         @endif
                     </a>
 
@@ -76,8 +77,8 @@
                             </a>
                         @endif
 
-                        {{-- User menu — Flux dropdown replaces the click-JS version --}}
-                        <flux:dropdown position="bottom" align="end">
+                        {{-- User menu — Flux dropdown replaces the click-JS version; on phones the same links are in the menu below --}}
+                        <flux:dropdown position="bottom" align="end" class="hidden sm:block">
                             <flux:button variant="ghost" icon-trailing="chevron-down">
                                 <span class="hidden md:inline">{{ Str::before(auth()->user()->name, ' ') }}</span>
                             </flux:button>
@@ -136,12 +137,7 @@
     </header>
 
     {{-- ── Toast flash messages — Flux toast replaces the custom fade/dismiss JS ── --}}
-    @if(session('success'))
-        <flux:toast variant="success">{{ session('success') }}</flux:toast>
-    @endif
-    @if(session('error'))
-        <flux:toast variant="danger">{{ session('error') }}</flux:toast>
-    @endif
+    <x-flash-toast />
 
     {{-- Main content --}}
     <main class="flex-1">
@@ -155,7 +151,7 @@
                 <div class="sm:col-span-2">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-10 h-10 rounded-full overflow-hidden ring-2 ring-[#D4C7B0]">
-                            <img src="{{ asset('images/products/logo.jpg') }}" alt="" class="w-full h-full object-cover">
+                            <img loading="lazy" decoding="async" src="{{ asset('images/products/logo.jpg') }}" alt="" class="w-full h-full object-cover">
                         </div>
                         <span class="font-black text-lg tracking-widest font-heading uppercase text-white">Eben Supply</span>
                     </div>
@@ -169,24 +165,24 @@
                 </div>
                 <div>
                     <h4 class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4 font-heading">Shop</h4>
-                    <ul class="space-y-2 text-sm text-stone-300">
-                        <li><a href="{{ route('products.index', ['category' => 'tshirt']) }}" class="hover:text-[#D4C7B0] transition-colors">T-Shirts</a></li>
-                        <li><a href="{{ route('products.index', ['category' => 'cap']) }}" class="hover:text-[#D4C7B0] transition-colors">Caps</a></li>
-                        <li><a href="{{ route('products.index', ['category' => 'tote_bag']) }}" class="hover:text-[#D4C7B0] transition-colors">Tote Bags</a></li>
-                        <li><a href="{{ route('products.index') }}" class="hover:text-[#D4C7B0] transition-colors">All Products</a></li>
+                    <ul class="space-y-0 text-sm text-stone-300">
+                        <li><a href="{{ route('products.index', ['category' => 'tshirt']) }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">T-Shirts</a></li>
+                        <li><a href="{{ route('products.index', ['category' => 'cap']) }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">Caps</a></li>
+                        <li><a href="{{ route('products.index', ['category' => 'tote_bag']) }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">Tote Bags</a></li>
+                        <li><a href="{{ route('products.index') }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">All Products</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4 font-heading">Account</h4>
-                    <ul class="space-y-2 text-sm text-stone-300">
+                    <ul class="space-y-0 text-sm text-stone-300">
                         @auth
-                            <li><a href="{{ route('orders.index') }}" class="hover:text-[#D4C7B0] transition-colors">My Orders</a></li>
-                            <li><a href="{{ route('profile.edit') }}" class="hover:text-[#D4C7B0] transition-colors">Profile</a></li>
+                            <li><a href="{{ route('orders.index') }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">My Orders</a></li>
+                            <li><a href="{{ route('profile.edit') }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">Profile</a></li>
                         @else
-                            <li><a href="{{ route('login') }}" class="hover:text-[#D4C7B0] transition-colors">Sign In</a></li>
-                            <li><a href="{{ route('register') }}" class="hover:text-[#D4C7B0] transition-colors">Register</a></li>
+                            <li><a href="{{ route('login') }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">Sign In</a></li>
+                            <li><a href="{{ route('register') }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">Register</a></li>
                         @endauth
-                        <li><a href="{{ route('cart.index') }}" class="hover:text-[#D4C7B0] transition-colors">Cart</a></li>
+                        <li><a href="{{ route('cart.index') }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">Cart</a></li>
                     </ul>
                 </div>
             </div>

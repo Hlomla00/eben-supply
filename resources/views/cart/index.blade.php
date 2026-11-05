@@ -15,7 +15,7 @@
                 @foreach($cartItems as $item)
                     <div class="card p-5 flex gap-5">
                         <div class="w-24 h-24 rounded-xl overflow-hidden bg-[#F5F5F5] flex-shrink-0">
-                            <img src="{{ asset($item->product->image_path ?: 'images/products/placeholder.jpg') }}"
+                            <img loading="lazy" decoding="async" src="{{ asset($item->product->image_path ?: 'images/products/placeholder.jpg') }}"
                                  alt="{{ $item->product->name }}" class="w-full h-full object-cover">
                         </div>
                         <div class="flex-1 min-w-0">
@@ -30,8 +30,9 @@
                                 @csrf
                                 <input type="hidden" name="cart_item_id" value="{{ $item->id }}">
                                 <select name="quantity" onchange="this.form.submit()"
-                                        class="border border-stone-200 rounded-lg text-sm text-[#333333] px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#D4C7B0] bg-white font-heading">
-                                    @for($i = 1; $i <= 10; $i++)
+                                        class="border border-stone-200 rounded-lg text-sm text-[#333333] pl-3 pr-9 py-1.5 min-w-[4.5rem] focus:outline-none focus:ring-2 focus:ring-[#D4C7B0] bg-white font-heading">
+                                    @php $maxQty = max($item->quantity, min(10, $item->product->availableStock($item->size))); @endphp
+                                    @for($i = 1; $i <= $maxQty; $i++)
                                         <option value="{{ $i }}" {{ $item->quantity == $i ? 'selected' : '' }}>{{ $i }}</option>
                                     @endfor
                                 </select>

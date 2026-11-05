@@ -121,7 +121,7 @@
                     @foreach($cartItems as $item)
                         <div class="flex gap-3 items-center">
                             <div class="w-11 h-11 rounded-lg overflow-hidden bg-[#F5F5F5] flex-shrink-0">
-                                <img src="{{ asset($item->product->image_path ?: 'images/products/placeholder.jpg') }}" alt="" class="w-full h-full object-cover">
+                                <img loading="lazy" decoding="async" src="{{ asset($item->product->image_path ?: 'images/products/placeholder.jpg') }}" alt="" class="w-full h-full object-cover">
                             </div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-xs font-medium text-[#333333] leading-tight truncate">{{ $item->product->name }}</p>

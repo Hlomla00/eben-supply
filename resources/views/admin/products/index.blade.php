@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-{{-- Phelo Mguca — 2330707726 | Group KN3}}
+{{-- Phelo Mguca — 2330707726 | Group KN3 --}}
 @section('title', 'Products')
 
 @section('content')
@@ -34,7 +34,7 @@
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-11 h-11 rounded-lg overflow-hidden bg-[#F5F5F5] flex-shrink-0">
-                                    <img src="{{ asset($product->image_path ?: 'images/products/placeholder.jpg') }}" alt="" class="w-full h-full object-cover">
+                                    <img loading="lazy" decoding="async" src="{{ asset($product->image_path ?: 'images/products/placeholder.jpg') }}" alt="" class="w-full h-full object-cover">
                                 </div>
                                 <div>
                                     <p class="font-heading font-semibold text-[#333333] text-sm leading-tight">{{ $product->name }}</p>
@@ -64,10 +64,10 @@
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-3">
-                                <a href="{{ route('admin.products.edit', $product) }}" class="text-xs font-semibold text-stone-400 hover:text-[#333333] transition-colors">Edit</a>
+                                <a href="{{ route('admin.products.edit', $product) }}" class="inline-block px-2 py-2 text-xs font-semibold text-stone-400 hover:text-[#333333] transition-colors">Edit</a>
                                 <form action="{{ route('admin.products.destroy', $product) }}" method="POST" onsubmit="return confirm('Delete this product?')">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="text-xs font-semibold text-stone-300 hover:text-red-500 transition-colors">Delete</button>
+                                    <button type="submit" class="px-2 py-2 text-xs font-semibold text-stone-300 hover:text-red-500 transition-colors">Delete</button>
                                 </form>
                             </div>
                         </td>

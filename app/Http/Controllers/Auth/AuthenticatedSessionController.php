@@ -28,7 +28,26 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        if ($request->user()->isAdmin()) {
+            // Admins land in the admin panel; they only go back to a page they
+            // were sent away from if that page is itself part of the admin side
+            $intended = $request->session()->pull('url.intended');
+
+            return redirect(self::isAdminUrl($intended) ? $intended : route('admin.dashboard', absolute: false));
+        }
+
         return redirect()->intended(route('home', absolute: false));
+    }
+
+    private static function isAdminUrl(?string $url): bool
+    {
+        if (! $url) {
+            return false;
+        }
+
+        $path = '/'.ltrim((string) parse_url($url, PHP_URL_PATH), '/');
+
+        return $path === '/admin' || str_starts_with($path, '/admin/');
     }
 
     /**
