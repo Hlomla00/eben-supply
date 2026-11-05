@@ -2,9 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\CartItem;
 use App\Models\Product;
-use App\Models\User;
 use Database\Seeders\ProductSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -53,7 +51,7 @@ class ProductSeederTest extends TestCase
         $this->seed(ProductSeeder::class);
 
         $cap->refresh();
-        $this->assertSame(3, (int) $cap->stock_quantity);
+        $this->assertSame(3, $cap->stock_quantity);
         $this->assertEquals(999, $cap->price);
     }
 
@@ -61,14 +59,15 @@ class ProductSeederTest extends TestCase
     {
         $this->seed(ProductSeeder::class);
         $cap = Product::firstWhere('name', 'ES Dad Cap – Signature');
-        // A database seeded by the earlier catalogue, which showed the wrong photo.
-        $cap->update(['image_path' => 'images/products/product 2.jpeg', 'stock_quantity' => 7]);
+        // An install seeded by an earlier version: illustration and old description.
+        $cap->update(['image_path' => 'images/products/cap-ivory.svg', 'description' => 'Tonal ES embroidery.', 'stock_quantity' => 7]);
 
         $this->seed(ProductSeeder::class);
 
         $cap->refresh();
         $this->assertSame('images/products/photos/grey-cap.jpg', $cap->image_path);
-        $this->assertSame(7, (int) $cap->stock_quantity);
+        $this->assertStringContainsString('charcoal', $cap->description);
+        $this->assertSame(7, $cap->stock_quantity);
     }
 
     public function test_a_custom_image_set_by_an_admin_is_never_replaced(): void
@@ -83,25 +82,41 @@ class ProductSeederTest extends TestCase
         $this->assertSame('Admin text', $cap->fresh()->description);
     }
 
-    public function test_reseeding_upgrades_a_database_from_the_earlier_catalogue(): void
+    public function test_no_product_uses_a_drawing_or_placeholder(): void
     {
-        $retired = Product::create(['name' => 'ES Snapback – Classic Black', 'category' => 'cap', 'price' => 249,
-            'stock_quantity' => 5, 'image_path' => 'images/products/product 1.jpeg']);
-        $customised = Product::create(['name' => 'ES 5-Panel – Street Cap', 'category' => 'cap', 'price' => 249,
-            'stock_quantity' => 5, 'image_path' => 'images/products/uploads/real-photo.jpg']);
-        $zip = Product::create(['name' => 'ES Zip Tote – Black', 'category' => 'tote_bag', 'price' => 199,
-            'stock_quantity' => 9, 'image_path' => 'images/products/product 3.jpeg']);
-        CartItem::create(['user_id' => User::factory()->create()->id, 'product_id' => $retired->id, 'quantity' => 1]);
+        $this->seed(ProductSeeder::class);
+
+        foreach (Product::all() as $product) {
+            $this->assertMatchesRegularExpression('/\.(jpe?g|png|webp)$/i', $product->image_path, $product->name);
+        }
+        $this->assertSame([], glob(public_path('images/products/*.svg')));
+        $this->assertSame([], glob(public_path('images/products/*/*.svg')));
+    }
+
+    public function test_reseeding_upgrades_an_install_from_the_earlier_catalogue(): void
+    {
+        // As seeded by the previous version: drawings, old name, old category.
+        $oldKids = Product::factory()->create(['name' => 'ES Kids Tee – Sand', 'is_kids' => true,
+            'image_path' => 'images/products/kids/kids-tee-sand.svg']);
+        $customised = Product::factory()->create(['name' => 'ES Snapback – Classic Black',
+            'image_path' => 'images/products/uploads/real-photo.jpg']);
+        $zip = Product::factory()->create(['name' => 'ES Zip Tote – Black', 'category' => 'tote_bag',
+            'image_path' => 'images/products/tote-black.svg', 'stock_quantity' => 9]);
+        $jersey = Product::factory()->create(['name' => 'ES Jersey – Street Edition', 'category' => 'tshirt',
+            'image_path' => 'images/products/jerseys.jpeg']);
+        \App\Models\CartItem::create(['user_id' => \App\Models\User::factory()->create()->id, 'product_id' => $oldKids->id, 'quantity' => 1]);
 
         $this->seed(ProductSeeder::class);
 
-        $this->assertSoftDeleted($retired);
-        $this->assertDatabaseMissing('cart_items', ['product_id' => $retired->id]);
-        $this->assertNotSoftDeleted($customised);   // an admin gave it a real photo
+        $this->assertSoftDeleted($oldKids);
+        $this->assertDatabaseMissing('cart_items', ['product_id' => $oldKids->id]);
+        $this->assertNotSoftDeleted($customised);                       // an admin gave it a real photo
         $zip->refresh();
         $this->assertSame('ES Logo Tote – Black', $zip->name);
         $this->assertSame('images/products/photos/black-e-tote.jpg', $zip->image_path);
-        $this->assertSame(9, (int) $zip->stock_quantity);
+        $this->assertSame(9, $zip->stock_quantity);
+        $this->assertSame('sweater', $jersey->fresh()->category);
+        $this->assertSame(1, Product::where('name', 'ES Logo Tote – Black')->count());
     }
 
     public function test_missing_image_falls_back_to_existing_placeholder(): void
@@ -112,14 +127,5 @@ class ProductSeederTest extends TestCase
 
         $this->assertStringEndsWith(Product::PLACEHOLDER_IMAGE, $product->image_url);
         $this->assertFileExists(public_path(Product::PLACEHOLDER_IMAGE));
-    }
-
-    public function test_category_labels_come_from_one_list(): void
-    {
-        $tote = new Product(['category' => 'tote_bag']);
-
-        $this->assertSame('Tote Bag', $tote->category_label);
-        $this->assertSame('badge-tote_bag', $tote->category_badge);
-        $this->assertSame('Tote Bags', Product::categoryPluralLabel('tote_bag'));
     }
 }

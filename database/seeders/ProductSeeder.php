@@ -39,6 +39,11 @@ class ProductSeeder extends Seeder
     private const RETIRED = [
         'ES Snapback – Classic Black'   => ['images/products/cap-black.svg', 'images/products/product 1.jpeg'],
         'ES 5-Panel – Street Cap'       => ['images/products/cap-grey.svg', 'images/products/product 1.jpeg'],
+        'ES Kids Tee – Jet Black'       => ['images/products/kids/kids-tee-black.svg'],
+        'ES Kids Tee – Sand'            => ['images/products/kids/kids-tee-sand.svg'],
+        'ES Kids Graphic Tee – Olive'   => ['images/products/kids/kids-tee-olive.svg'],
+        'ES Kids Snapback – Navy'       => ['images/products/kids/kids-cap-navy.svg'],
+        'ES Kids Mini Tote – Natural'   => ['images/products/kids/kids-tote-natural.svg'],
     ];
 
     public function run(): void
@@ -50,7 +55,7 @@ class ProductSeeder extends Seeder
         | product 1.jpeg (folded black tees), supply here.jpeg (cream tee),
         | G-T-shirt back.jpeg (green back-print tee), jerseys.jpeg (grey
         | quarter-zip), sweaters.jpeg (crew sweaters) and photos/*.jpg
-        | (web-sized cap and tote product shots).
+        | (web-sized cap, tote and kids product shots).
         */
 
         $products = [
@@ -80,16 +85,20 @@ class ProductSeeder extends Seeder
                 'description'    => 'Forest-green boxy tee with a large Eben Supply "Est. 2015 · Made in Cape Town" back print. Heavyweight 220gsm cotton, ribbed collar. Limited quantities.',
                 'category'       => 'tshirt',
                 'price'          => 319.00,
+                // Active sale ending in 30 days.
+                'sale_price'     => 279.00,
+                'sale_ends_at'   => now()->addDays(30)->startOfDay(),
                 'stock_quantity' => 35,
                 'image_path'     => 'images/products/G-T-shirt back.jpeg',
                 'is_featured'    => true,
                 'sizes'          => ['S' => 6, 'M' => 12, 'L' => 10, 'XL' => 5, 'XXL' => 2],
             ],
 
+            // ── SWEATSHIRTS & HOODIES ─────────────────────────────────────────
             [
                 'name'           => 'ES Jersey – Street Edition',
                 'description'    => 'Grey marl quarter-zip jersey with green Eben Supply "Made in Cape Town" script embroidery. Brushed fleece, stand collar, relaxed fit.',
-                'category'       => 'tshirt',
+                'category'       => 'sweater',
                 'price'          => 349.00,
                 'stock_quantity' => 24,
                 'image_path'     => 'images/products/jerseys.jpeg',
@@ -99,7 +108,7 @@ class ProductSeeder extends Seeder
             [
                 'name'           => 'ES Sweater – Woodstock Crew',
                 'description'    => 'Midweight fleece crew-neck sweater. Brushed inner lining, ribbed cuffs and hem. Screen-printed EBEN SUPPLY arc logo on chest. Autumn essential.',
-                'category'       => 'tshirt',
+                'category'       => 'sweater',
                 'price'          => 399.00,
                 'stock_quantity' => 29,
                 'image_path'     => 'images/products/sweaters.jpeg',
@@ -133,6 +142,10 @@ class ProductSeeder extends Seeder
                 'description'    => 'Two-tone cap with a cream crown and forest-green brim, eyelets and button. Embroidered green Eben Supply "Est. 2015 ZA" E badge on the front. Adjustable strap.',
                 'category'       => 'cap',
                 'price'          => 219.00,
+                // Ended sale: shows the normal price again.
+                'sale_price'     => 169.00,
+                'sale_starts_at' => now()->subDays(30)->startOfDay(),
+                'sale_ends_at'   => now()->subDay()->startOfDay(),
                 'stock_quantity' => 18,
                 'image_path'     => 'images/products/photos/cream-green-cap.jpg',
                 'is_featured'    => false,
@@ -175,6 +188,10 @@ class ProductSeeder extends Seeder
                 'description'    => 'Black canvas tote with a cream E SUPPLY "Est. 2015 · CPT//SSP" logo print. Long handles and a roomy flat body for a full day out.',
                 'category'       => 'tote_bag',
                 'price'          => 219.00,
+                // Scheduled sale: starts in a week, not shown on the Sale page yet.
+                'sale_price'     => 179.00,
+                'sale_starts_at' => now()->addDays(7)->startOfDay(),
+                'sale_ends_at'   => now()->addDays(21)->startOfDay(),
                 'stock_quantity' => 25,
                 'image_path'     => 'images/products/photos/black-e-tote.jpg',
                 'is_featured'    => true,
@@ -210,6 +227,54 @@ class ProductSeeder extends Seeder
                 'is_featured'    => false,
                 'sizes'          => [],
             ],
+
+            // ── KIDS ──────────────────────────────────────────────────────────
+            [
+                'name'           => 'ES Kids Kite Tee – Sky Blue',
+                'description'    => 'Soft sky-blue kids tee with a hand-drawn back print of a little one flying a T-shirt kite under the sun. Small EBEN SUPPLY print. Pre-shrunk cotton made for play.',
+                'category'       => 'tshirt',
+                'is_kids'        => true,
+                'price'          => 199.00,
+                // Active sale with no end date.
+                'sale_price'     => 159.00,
+                'stock_quantity' => 28,
+                'image_path'     => 'images/products/photos/kids-kite-tee.jpg',
+                'is_featured'    => true,
+                'sizes'          => ['2-3Y' => 4, '4-5Y' => 6, '6-7Y' => 6, '8-9Y' => 5, '10-11Y' => 4, '12-13Y' => 3],
+            ],
+            [
+                'name'           => 'ES Kids Rainbow Crew – Sand',
+                'description'    => 'Cosy sand-coloured kids sweatshirt with a hand-lettered rainbow EBEN SUPPLY arc. Brushed fleece inside, dropped shoulders and ribbed cuffs.',
+                'category'       => 'sweater',
+                'is_kids'        => true,
+                'price'          => 299.00,
+                'stock_quantity' => 21,
+                'image_path'     => 'images/products/photos/kids-rainbow-crew.jpg',
+                'is_featured'    => true,
+                'sizes'          => ['2-3Y' => 3, '4-5Y' => 4, '6-7Y' => 5, '8-9Y' => 4, '10-11Y' => 3, '12-13Y' => 2],
+            ],
+            [
+                'name'           => 'ES Kids Doodle Hoodie – Rust',
+                'description'    => 'Rust kids hoodie with a small EBEN SUPPLY front print and a big back print full of doodles — suns, clouds, trees, a puppy and a little Eben shop. Kangaroo pocket, lined hood.',
+                'category'       => 'sweater',
+                'is_kids'        => true,
+                'price'          => 349.00,
+                'stock_quantity' => 21,
+                'image_path'     => 'images/products/photos/kids-doodle-hoodie.jpg',
+                'is_featured'    => true,
+                'sizes'          => ['2-3Y' => 3, '4-5Y' => 4, '6-7Y' => 5, '8-9Y' => 4, '10-11Y' => 3, '12-13Y' => 2],
+            ],
+            [
+                'name'           => 'ES Kids Joggers – Sky Blue',
+                'description'    => 'Sky-blue fleece joggers with an elastic waist, side pockets and a crayon-style EBEN SUPPLY print in red, blue and yellow. Pairs with the Kite Tee.',
+                'category'       => 'pants',
+                'is_kids'        => true,
+                'price'          => 269.00,
+                'stock_quantity' => 21,
+                'image_path'     => 'images/products/photos/kids-joggers.jpg',
+                'is_featured'    => false,
+                'sizes'          => ['2-3Y' => 3, '4-5Y' => 4, '6-7Y' => 5, '8-9Y' => 4, '10-11Y' => 3, '12-13Y' => 2],
+            ],
         ];
 
         $this->upgradeExistingCatalogue();
@@ -218,7 +283,7 @@ class ProductSeeder extends Seeder
             $sizes = $data['sizes'];
             unset($data['sizes']);
 
-            // Seeding can run again on a live database, so never overwrite live
+            // The deploy entrypoint seeds on every boot, so never overwrite live
             // stock, prices or admin edits on products that already exist.
             $product = Product::withTrashed()->firstWhere('name', $data['name']);
 
@@ -238,6 +303,11 @@ class ProductSeeder extends Seeder
             // Repair images that were seeded against the wrong product, or as a drawing.
             if (in_array($product->image_path, self::MISMATCHED_IMAGES[$data['name']] ?? [], true)) {
                 $product->update(['image_path' => $data['image_path'], 'description' => $data['description']]);
+            }
+
+            // Sweatshirts were seeded under T-Shirts before their category existed.
+            if ($data['category'] === 'sweater' && $product->category === 'tshirt') {
+                $product->update(['category' => 'sweater']);
             }
         }
     }

@@ -11,15 +11,14 @@ class HomeController extends Controller
     {
         // Pull one featured product from each category first, then fill remaining
         // slots randomly — guarantees mix of tees, caps & totes on every load.
-        $categories = ['tshirt', 'cap', 'tote_bag'];
+        $categories = Product::categoryKeys();
         $pinned = collect();
         foreach ($categories as $cat) {
             $pick = Product::featured()
                 ->where('stock_quantity', '>', 0)
                 ->where('category', $cat)
-                ->with(['sizes' => function ($query) {
-                    $query->select('id', 'product_id', 'size', 'stock_quantity');
-                }])
+                ->adult()
+                ->with('sizes')
                 ->inRandomOrder()
                 ->first();
             if ($pick) $pinned->push($pick);
@@ -29,15 +28,16 @@ class HomeController extends Controller
         $extras = Product::featured()
             ->where('stock_quantity', '>', 0)
             ->whereNotIn('id', $pinnedIds)
-            ->with(['sizes' => function ($query) {
-                $query->select('id', 'product_id', 'size', 'stock_quantity');
-            }])
+            ->with('sizes')
             ->inRandomOrder()
             ->take(6 - $pinned->count())
             ->get();
 
         $featuredProducts = $pinned->merge($extras)->shuffle();
 
-        return view('home', compact('featuredProducts'));
+        $productCount  = Product::count();
+        $categoryCount = count(Product::CATEGORIES);
+
+        return view('home', compact('featuredProducts', 'productCount', 'categoryCount'));
     }
 }
