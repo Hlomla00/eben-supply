@@ -12,7 +12,7 @@
         <a href="{{ route('products.index') }}" class="inline-block px-1 py-2 hover:text-[#333333] transition-colors">Shop</a>
         <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"/></svg>
         <a href="{{ route('products.index', ['category' => $product->category]) }}" class="inline-block px-1 py-2 hover:text-[#333333] transition-colors capitalize">
-            {{ ['tshirt'=>'T-Shirts','cap'=>'Caps','tote_bag'=>'Tote Bags'][$product->category] ?? $product->category }}
+            {{ \App\Models\Product::categoryPluralLabel($product->category) ?? $product->category }}
         </a>
         <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"/></svg>
         <span class="text-[#333333] font-medium truncate max-w-[180px] sm:max-w-xs">{{ $product->name }}</span>
@@ -22,19 +22,17 @@
 
         {{-- ── Product Image ── --}}
         <div class="bg-[#F5F5F5] rounded-2xl overflow-hidden aspect-square shadow-soft product-img-wrap cursor-zoom-in">
-            <img src="{{ asset($product->image_path ?: 'images/products/placeholder.jpg') }}"
+            <img src="{{ $product->image_url }}"
                  alt="{{ $product->name }}">
         </div>
 
         {{-- ── Product Details ── --}}
         <div class="flex flex-col">
             @php
-                $catBadges = ['tshirt' => 'badge-tshirt', 'cap' => 'badge-cap', 'tote_bag' => 'badge-tote_bag'];
-                $catLabels = ['tshirt' => 'T-Shirt', 'cap' => 'Cap', 'tote_bag' => 'Tote Bag'];
             @endphp
 
             <div class="flex items-center gap-3 mb-4">
-                <span class="badge {{ $catBadges[$product->category] ?? '' }}">{{ $catLabels[$product->category] ?? $product->category }}</span>
+                <span class="badge {{ $product->category_badge }}">{{ $product->category_label }}</span>
                 @if($product->is_featured)
                     <span class="badge bg-[#D4C7B0] text-[#333333]">Featured</span>
                 @endif
@@ -158,12 +156,10 @@
         <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             @foreach($related as $rel)
                 @php
-                    $catBadges = ['tshirt' => 'badge-tshirt', 'cap' => 'badge-cap', 'tote_bag' => 'badge-tote_bag'];
-                    $catLabels = ['tshirt' => 'T-Shirt', 'cap' => 'Cap', 'tote_bag' => 'Tote Bag'];
                 @endphp
                 <a href="{{ route('products.show', $rel) }}" class="card card-hover group overflow-hidden block">
                     <div class="aspect-square product-img-wrap bg-[#F5F5F5]">
-                        <img src="{{ asset($rel->image_path ?: 'images/products/placeholder.jpg') }}"
+                        <img src="{{ $rel->image_url }}"
                              loading="lazy" decoding="async" alt="{{ $rel->name }}">
                     </div>
                     <div class="p-4">

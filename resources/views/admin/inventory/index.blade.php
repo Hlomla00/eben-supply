@@ -12,12 +12,11 @@
         @foreach($products as $product)
             @php
                 $isLow   = $product->stock_quantity < 5;
-                $catLabels = ['tshirt' => 'T-Shirt', 'cap' => 'Cap', 'tote_bag' => 'Tote Bag'];
             @endphp
             <div class="bg-white rounded-xl border {{ $isLow ? 'border-amber-200' : 'border-stone-100' }} shadow-soft p-5">
                 <div class="flex items-center gap-4 mb-4">
                     <div class="w-14 h-14 rounded-xl overflow-hidden bg-[#F5F5F5] flex-shrink-0">
-                        <img loading="lazy" decoding="async" src="{{ asset($product->image_path ?: 'images/products/placeholder.jpg') }}"
+                        <img loading="lazy" decoding="async" src="{{ $product->image_url }}"
                              alt="" class="w-full h-full object-cover">
                     </div>
                     <div class="flex-1 min-w-0">
@@ -29,7 +28,7 @@
                                 <span class="text-[10px] font-heading font-bold bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full uppercase tracking-wide">Low Stock</span>
                             @endif
                         </div>
-                        <p class="text-xs text-stone-400 mt-0.5">{{ $catLabels[$product->category] ?? $product->category }} · R{{ number_format($product->price, 2) }}</p>
+                        <p class="text-xs text-stone-400 mt-0.5">{{ $product->category_label }} · R{{ number_format($product->price, 2) }}</p>
                     </div>
 
                     {{-- Total stock (no sizes) --}}

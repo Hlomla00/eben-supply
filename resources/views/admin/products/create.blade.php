@@ -25,9 +25,9 @@
                 <label class="form-label">Category *</label>
                 <select name="category" class="form-input @error('category') ring-2 ring-red-300 @enderror">
                     <option value="">Select category…</option>
-                    <option value="tshirt"   {{ old('category') === 'tshirt'   ? 'selected' : '' }}>T-Shirt</option>
-                    <option value="cap"      {{ old('category') === 'cap'      ? 'selected' : '' }}>Cap</option>
-                    <option value="tote_bag" {{ old('category') === 'tote_bag' ? 'selected' : '' }}>Tote Bag</option>
+                    @foreach(\App\Models\Product::CATEGORIES as $key => [$label])
+                        <option value="{{ $key }}" {{ old('category') === $key ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
                 </select>
                 @error('category')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
             </div>

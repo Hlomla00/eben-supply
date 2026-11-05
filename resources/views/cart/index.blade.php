@@ -15,7 +15,7 @@
                 @foreach($cartItems as $item)
                     <div class="card p-5 flex gap-5">
                         <div class="w-24 h-24 rounded-xl overflow-hidden bg-[#F5F5F5] flex-shrink-0">
-                            <img loading="lazy" decoding="async" src="{{ asset($item->product->image_path ?: 'images/products/placeholder.jpg') }}"
+                            <img loading="lazy" decoding="async" src="{{ $item->product->image_url }}"
                                  alt="{{ $item->product->name }}" class="w-full h-full object-cover">
                         </div>
                         <div class="flex-1 min-w-0">
