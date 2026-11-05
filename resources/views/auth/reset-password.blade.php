@@ -1,39 +1,47 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('password.store') }}">
-        @csrf
+{{-- PRT362S — Eben Supply | Group KN3 --}}
+@extends('layouts.app')
+@section('title', 'Reset Password')
 
-        <!-- Password Reset Token -->
-        <input type="hidden" name="token" value="{{ $request->route('token') }}">
+@section('content')
+<div class="min-h-[70vh] flex items-center justify-center px-4 py-16 bg-[#F5F5F5]">
+    <div class="w-full max-w-md">
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div class="text-center mb-8">
+            <h1 class="font-heading font-black text-3xl text-[#333333] mb-2">Reset Password</h1>
+            <p class="text-stone-400 text-sm">Choose a new password for your Eben Supply account.</p>
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div class="bg-white rounded-2xl border border-stone-100 shadow-card p-8">
+            <form method="POST" action="{{ route('password.store') }}" class="space-y-5">
+                @csrf
+                <input type="hidden" name="token" value="{{ $request->route('token') }}">
+
+                <div>
+                    <label class="form-label" for="email">Email Address</label>
+                    <input id="email" type="email" name="email" value="{{ old('email', $request->email) }}" required autofocus autocomplete="username"
+                           class="form-input @error('email') ring-2 ring-red-300 @enderror">
+                    @error('email')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+
+                <div>
+                    <label class="form-label" for="password">New Password</label>
+                    <input id="password" type="password" name="password" required autocomplete="new-password"
+                           class="form-input @error('password') ring-2 ring-red-300 @enderror"
+                           placeholder="••••••••">
+                    @error('password')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+
+                <div>
+                    <label class="form-label" for="password_confirmation">Confirm Password</label>
+                    <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password"
+                           class="form-input @error('password_confirmation') ring-2 ring-red-300 @enderror"
+                           placeholder="••••••••">
+                    @error('password_confirmation')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+
+                <button type="submit" class="btn-primary w-full py-3 text-sm">Reset Password</button>
+            </form>
         </div>
-
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                                type="password"
-                                name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Reset Password') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+    </div>
+</div>
+@endsection

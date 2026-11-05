@@ -10,6 +10,18 @@ class Product extends Model
 {
     use HasFactory, SoftDeletes;
 
+    /**
+     * Single source for category keys and labels: [key => [singular, plural, badge class]].
+     */
+    public const CATEGORIES = [
+        'tshirt'   => ['T-Shirt', 'T-Shirts', 'badge-tshirt'],
+        'cap'      => ['Cap', 'Caps', 'badge-cap'],
+        'tote_bag' => ['Tote Bag', 'Tote Bags', 'badge-tote_bag'],
+    ];
+
+    /** Shown if a product's image file is missing. */
+    public const PLACEHOLDER_IMAGE = 'images/products/placeholder.jpg';
+
     protected $fillable = [
         'name',
         'description',
@@ -58,14 +70,19 @@ class Product extends Model
         return (int) ($this->sizes->firstWhere('size', $size)?->stock_quantity ?? 0);
     }
 
+    public static function categoryPluralLabel(?string $category): ?string
+    {
+        return self::CATEGORIES[$category][1] ?? null;
+    }
+
     public function getCategoryLabelAttribute(): string
     {
-        return match($this->category) {
-            'tshirt'   => 'T-Shirt',
-            'cap'      => 'Cap',
-            'tote_bag' => 'Tote Bag',
-            default    => ucfirst($this->category),
-        };
+        return self::CATEGORIES[$this->category][0] ?? ucfirst((string) $this->category);
+    }
+
+    public function getCategoryBadgeAttribute(): string
+    {
+        return self::CATEGORIES[$this->category][2] ?? '';
     }
 
     public function getImageUrlAttribute(): string
@@ -73,7 +90,7 @@ class Product extends Model
         if ($this->image_path && file_exists(public_path($this->image_path))) {
             return asset($this->image_path);
         }
-        return asset('images/placeholder.jpg');
+        return asset(self::PLACEHOLDER_IMAGE);
     }
 
     public function scopeFeatured($query)

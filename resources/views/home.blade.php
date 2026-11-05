@@ -77,19 +77,17 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
         @forelse($featuredProducts as $i => $product)
             @php
-                $catBadges = ['tshirt' => 'badge-tshirt', 'cap' => 'badge-cap', 'tote_bag' => 'badge-tote_bag'];
-                $catLabels = ['tshirt' => 'T-Shirt', 'cap' => 'Cap', 'tote_bag' => 'Tote Bag'];
             @endphp
             <a href="{{ route('products.show', $product) }}"
                class="card card-hover group overflow-hidden block"
                data-reveal style="transition-delay: {{ $i * 80 }}ms">
                 <div class="aspect-square product-img-wrap bg-[#F5F5F5]">
-                    <img src="{{ asset($product->image_path ?: 'images/products/placeholder.jpg') }}"
+                    <img src="{{ $product->image_url }}"
                          loading="lazy" decoding="async" alt="{{ $product->name }}">
                 </div>
                 <div class="p-5">
                     <div class="flex items-center justify-between mb-3">
-                        <span class="badge {{ $catBadges[$product->category] ?? '' }}">{{ $catLabels[$product->category] ?? $product->category }}</span>
+                        <span class="badge {{ $product->category_badge }}">{{ $product->category_label }}</span>
                         @if($product->stock_quantity === 0)
                             <span class="text-[10px] text-stone-400 font-medium">Out of Stock</span>
                         @elseif($product->stock_quantity < 5)

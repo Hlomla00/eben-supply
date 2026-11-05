@@ -27,14 +27,12 @@
             <tbody class="divide-y divide-stone-50">
                 @forelse($products as $product)
                     @php
-                        $catBadges = ['tshirt' => 'badge-tshirt', 'cap' => 'badge-cap', 'tote_bag' => 'badge-tote_bag'];
-                        $catLabels = ['tshirt' => 'T-Shirt', 'cap' => 'Cap', 'tote_bag' => 'Tote Bag'];
                     @endphp
                     <tr class="hover:bg-stone-50 transition-colors">
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-11 h-11 rounded-lg overflow-hidden bg-[#F5F5F5] flex-shrink-0">
-                                    <img loading="lazy" decoding="async" src="{{ asset($product->image_path ?: 'images/products/placeholder.jpg') }}" alt="" class="w-full h-full object-cover">
+                                    <img loading="lazy" decoding="async" src="{{ $product->image_url }}" alt="" class="w-full h-full object-cover">
                                 </div>
                                 <div>
                                     <p class="font-heading font-semibold text-[#333333] text-sm leading-tight">{{ $product->name }}</p>
@@ -42,7 +40,7 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="px-6 py-4"><span class="badge {{ $catBadges[$product->category] ?? '' }}">{{ $catLabels[$product->category] ?? $product->category }}</span></td>
+                        <td class="px-6 py-4"><span class="badge {{ $product->category_badge }}">{{ $product->category_label }}</span></td>
                         <td class="px-6 py-4 font-heading font-bold text-[#333333]">R{{ number_format($product->price, 2) }}</td>
                         <td class="px-6 py-4">
                             @if($product->stock_quantity === 0)
