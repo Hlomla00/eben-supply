@@ -38,7 +38,7 @@
             <p class="text-white/60 text-xs">Create new listing</p>
         </div>
     </a>
-    <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}"
+    <a href="{{ route('admin.orders.index', ['status' => 'paid']) }}"
        class="bg-white rounded-xl border border-stone-100 p-5 flex items-center gap-4 hover:border-[#D4C7B0] hover:shadow-card transition-all group shadow-soft">
         <div class="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center flex-shrink-0">
             <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -86,6 +86,8 @@
                             'confirmed' => 'status-confirmed',
                             'ready'     => 'status-ready',
                             'collected' => 'status-collected',
+                            'paid'      => 'status-paid',      // paid/cancelled — Hlomla Magopeni 218070349
+                            'cancelled' => 'status-cancelled',
                         ];
                     @endphp
                     <tr class="hover:bg-stone-50 transition-colors">

@@ -17,11 +17,19 @@
     </div>
 
     @php
-        $steps = ['pending', 'confirmed', 'ready', 'collected'];
-        $stepLabels = ['Pending', 'Confirmed', 'Ready', 'Collected'];
-        $currentStep = array_search($order->status, $steps);
+        // First step reads Pending or Paid, whichever the order has — Hlomla Magopeni 218070349
+        $steps = \App\Models\Order::TRACKING_STEPS;
+        $stepLabels = [$order->status === 'pending' ? 'Pending' : 'Paid', 'Confirmed', 'Ready', 'Collected'];
+        $currentStep = $order->status === 'pending' ? 0 : array_search($order->status, $steps);
     @endphp
 
+    {{-- Cancelled orders show a notice instead of the timeline — Hlomla Magopeni 218070349 --}}
+    @if($order->status === 'cancelled')
+    <div class="card p-6 mb-6 border border-red-100 bg-red-50">
+        <p class="form-label mb-2 text-red-700">Order Cancelled</p>
+        <p class="text-sm text-red-700">This order was cancelled by Eben Supply on {{ $order->updated_at->format('d M Y, H:i') }}. Contact the store if you have any questions.</p>
+    </div>
+    @else
     {{-- Status timeline --}}
     <div class="card p-6 mb-6">
         <p class="form-label mb-5">Order Status</p>
@@ -47,6 +55,7 @@
             @endforeach
         </div>
     </div>
+    @endif
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
         <div class="card p-5">

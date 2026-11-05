@@ -17,6 +17,8 @@
                         'confirmed' => 'status-confirmed',
                         'ready'     => 'status-ready',
                         'collected' => 'status-collected',
+                        'paid'      => 'status-paid',      // paid/cancelled — Hlomla Magopeni 218070349
+                        'cancelled' => 'status-cancelled',
                     ];
                 @endphp
                 <a href="{{ route('orders.show', $order) }}"

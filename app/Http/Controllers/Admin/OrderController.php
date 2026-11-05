@@ -6,6 +6,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
 {
@@ -18,7 +20,7 @@ class OrderController extends Controller
         }
 
         $orders   = $query->paginate(20)->withQueryString();
-        $statuses = ['pending', 'confirmed', 'ready', 'collected'];
+        $statuses = Order::STATUSES; // paid/cancelled added — Hlomla Magopeni 218070349
 
         return view('admin.orders.index', compact('orders', 'statuses'));
     }
@@ -31,12 +33,31 @@ class OrderController extends Controller
 
     public function updateStatus(Request $request, Order $order)
     {
+        // Paid/cancelled statuses, closed orders and restock on cancel —
+        // Hlomla Magopeni 218070349
         $request->validate([
-            'status' => 'required|in:pending,confirmed,ready,collected',
+            'status' => ['required', Rule::in(Order::ADMIN_STATUSES)],
         ]);
 
-        $order->update(['status' => $request->status]);
+        if ($request->status === $order->status) {
+            return redirect()->back();
+        }
 
-        return redirect()->back()->with('success', 'Order status updated.');
+        if ($order->isClosed()) {
+            return redirect()->back()->with('error', "This order is {$order->status} and can no longer be changed.");
+        }
+
+        DB::transaction(function () use ($request, $order) {
+            if ($request->status === 'cancelled') {
+                $order->restock();
+            }
+            $order->update(['status' => $request->status]);
+        });
+
+        $message = $request->status === 'cancelled'
+            ? 'Order cancelled and stock returned.'
+            : 'Order status updated.';
+
+        return redirect()->back()->with('success', $message);
     }
 }
