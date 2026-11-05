@@ -28,15 +28,13 @@
 
         {{-- ── Product Image ── --}}
         <div class="bg-[#F5F5F5] rounded-2xl overflow-hidden aspect-square shadow-soft product-img-wrap cursor-zoom-in">
-            <img src="{{ asset($product->image_path ?: 'images/products/placeholder.jpg') }}"
+            <img src="{{ $product->image_url }}"
                  alt="{{ $product->name }}">
         </div>
 
         {{-- ── Product Details ── --}}
         <div class="flex flex-col">
             @php
-                $catBadges = ['tshirt' => 'badge-tshirt', 'cap' => 'badge-cap', 'tote_bag' => 'badge-tote_bag'];
-                $catLabels = ['tshirt' => 'T-Shirt', 'cap' => 'Cap', 'tote_bag' => 'Tote Bag'];
             @endphp
 
             <div class="flex items-center gap-3 mb-4">
@@ -176,8 +174,6 @@
         <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             @foreach($related as $rel)
                 @php
-                    $catBadges = ['tshirt' => 'badge-tshirt', 'cap' => 'badge-cap', 'tote_bag' => 'badge-tote_bag'];
-                    $catLabels = ['tshirt' => 'T-Shirt', 'cap' => 'Cap', 'tote_bag' => 'Tote Bag'];
                 @endphp
                 <a href="{{ route('products.show', $rel) }}" class="card card-hover group overflow-hidden block">
                     <div class="aspect-square product-img-wrap bg-[#F5F5F5] relative">

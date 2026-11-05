@@ -145,13 +145,11 @@
         <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             @foreach($products as $i => $product)
                 @php
-                    $catBadges = ['tshirt' => 'badge-tshirt', 'cap' => 'badge-cap', 'tote_bag' => 'badge-tote_bag'];
-                    $catLabels = ['tshirt' => 'T-Shirt', 'cap' => 'Cap', 'tote_bag' => 'Tote Bag'];
                 @endphp
                 <div class="card card-hover group overflow-hidden flex flex-col" data-reveal style="transition-delay: {{ ($i % 4) * 70 }}ms">
                     {{-- Image + hover actions --}}
                     <a href="{{ route('products.show', $product) }}" class="block relative aspect-square product-img-wrap bg-[#F5F5F5]">
-                        <img src="{{ asset($product->image_path ?: 'images/products/placeholder.jpg') }}"
+                        <img src="{{ $product->image_url }}"
                              loading="{{ $i < 4 ? 'eager' : 'lazy' }}" decoding="async" alt="{{ $product->name }}">
                         {{-- Hover overlay --}}
                         <div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
@@ -164,7 +162,7 @@
 
                     <div class="p-4 flex flex-col flex-1">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="badge {{ $catBadges[$product->category] ?? '' }}">{{ $catLabels[$product->category] ?? $product->category }}</span>
+                            <span class="badge {{ $product->category_badge }}">{{ $product->category_label }}</span>
                             @if($product->stock_quantity === 0)
                                 <span class="text-[10px] text-red-400 font-semibold">Out of Stock</span>
                             @elseif($product->stock_quantity < 5)
