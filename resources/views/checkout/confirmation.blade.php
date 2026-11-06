@@ -1,8 +1,6 @@
 <x-layouts.app title="Order Confirmed">
 {{-- Matuma Malapile 222904267 | Group KN3 --}}
 @php
-    $subtotal    = $order->items->sum(fn ($i) => $i->quantity * $i->unit_price);
-    $deliveryFee = $order->total_amount - $subtotal;
     $isPickup    = $order->fulfillment === 'pickup';
     $statusClasses = [
         'pending'   => 'status-pending',
@@ -36,10 +34,10 @@
             @foreach($order->items as $item)
                 <div class="flex gap-3 items-center">
                     <div class="w-14 h-14 rounded-lg overflow-hidden bg-[#F5F5F5] flex-shrink-0">
-                        <img src="{{ asset($item->product?->image_path ?: 'images/products/placeholder.jpg') }}" alt="" class="w-full h-full object-cover">
+                        <img src="{{ $item->image_url }}" alt="" class="w-full h-full object-cover">
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-[#333333] truncate">{{ $item->product?->name ?? 'Product no longer available' }}</p>
+                        <p class="text-sm font-medium text-[#333333] truncate">{{ $item->name }}</p>
                         @if($item->size)<p class="text-xs text-stone-400">Size: {{ $item->size }}</p>@endif
                         <p class="text-xs text-stone-400">Quantity: {{ $item->quantity }}</p>
                     </div>
@@ -48,16 +46,7 @@
             @endforeach
         </div>
 
-        <div class="border-t border-stone-100 pt-4 space-y-2 text-sm">
-            <div class="flex justify-between text-stone-500"><span>Subtotal</span><span>R{{ number_format($subtotal, 2) }}</span></div>
-            <div class="flex justify-between text-stone-500">
-                <span>Delivery</span>
-                <span>{{ $isPickup ? 'Free (Pickup)' : 'R' . number_format($deliveryFee, 2) }}</span>
-            </div>
-            <div class="flex justify-between font-heading font-black text-base border-t border-stone-100 pt-3 mt-1">
-                <span>Total Paid</span><span>R{{ number_format($order->total_amount, 2) }}</span>
-            </div>
-        </div>
+        @include('orders._totals', ['totalLabel' => 'Total Paid'])
     </div>
 
     <div class="card p-6 mb-8 bg-stone-50">

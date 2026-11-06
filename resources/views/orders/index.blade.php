@@ -39,7 +39,7 @@
                         </div>
                         <div>
                             <p class="text-stone-400 mb-0.5 font-heading uppercase tracking-wider text-[10px]">Items</p>
-                            <p class="font-medium text-[#333333]">{{ $order->items->count() }}</p>
+                            <p class="font-medium text-[#333333]">{{ $order->items->sum('quantity') }}</p>
                         </div>
                         <div>
                             <p class="text-stone-400 mb-0.5 font-heading uppercase tracking-wider text-[10px]">Fulfillment</p>

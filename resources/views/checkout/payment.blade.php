@@ -58,10 +58,13 @@
             {{-- Amount --}}
             <div class="text-center py-2">
                 <p class="text-stone-400 text-xs font-heading uppercase tracking-wider mb-1">Amount Due</p>
-                <p class="font-heading font-black text-5xl text-[#333333]">R{{ number_format($pending['total'], 2) }}</p>
+                <p class="font-heading font-black text-5xl text-[#333333]">R{{ number_format($totals['total'], 2) }}</p>
                 <p class="text-xs text-stone-400 mt-1">
-                    {{ $pending['fulfillment'] === 'delivery' ? 'Includes R60.00 delivery' : 'Store pickup — no delivery fee' }}
+                    {{ $pending['fulfillment'] === 'delivery' ? 'Includes R' . number_format($totals['delivery_fee'], 2) . ' delivery' : 'Store pickup — no delivery fee' }}
                 </p>
+                @if($promoError)
+                    <p class="text-xs text-red-500 mt-2" role="alert">{{ $promoError }} <a href="{{ route('cart.index') }}" class="underline">Change the code in your cart</a>.</p>
+                @endif
             </div>
 
             {{-- Order summary --}}
@@ -69,16 +72,21 @@
                 @foreach($cartItems as $item)
                     <div class="flex justify-between text-stone-600">
                         <span>{{ $item->product->name }}{{ $item->size ? ' ('.$item->size.')' : '' }} × {{ $item->quantity }}</span>
-                        <span class="font-semibold">R{{ number_format($item->quantity * $item->product->price, 2) }}</span>
+                        <span class="font-semibold">R{{ number_format($item->line_total, 2) }}</span>
                     </div>
                 @endforeach
+                @if($totals['discount'] > 0)
+                    <div class="flex justify-between text-emerald-700 border-t border-stone-200 pt-2 mt-2">
+                        <span>Discount ({{ $promo->code }})</span><span class="font-semibold">−R{{ number_format($totals['discount'], 2) }}</span>
+                    </div>
+                @endif
                 @if($pending['fulfillment'] === 'delivery')
                     <div class="flex justify-between text-stone-600 border-t border-stone-200 pt-2 mt-2">
-                        <span>Delivery</span><span class="font-semibold">R60.00</span>
+                        <span>Delivery</span><span class="font-semibold">R{{ number_format($totals['delivery_fee'], 2) }}</span>
                     </div>
                 @endif
                 <div class="flex justify-between font-heading font-bold text-[#333333] border-t border-stone-200 pt-2 mt-2">
-                    <span>Total</span><span>R{{ number_format($pending['total'], 2) }}</span>
+                    <span>Total</span><span>R{{ number_format($totals['total'], 2) }}</span>
                 </div>
             </div>
 
@@ -105,9 +113,10 @@
             {{-- Pay button --}}
             <form action="{{ route('checkout.confirm') }}" method="POST">
                 @csrf
+                <input type="hidden" name="expected_total" value="{{ number_format($totals['total'], 2, '.', '') }}">
                 <button type="submit" class="btn-primary w-full py-4 text-sm justify-center">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                    Pay Now — R{{ number_format($pending['total'], 2) }}
+                    Pay Now — R{{ number_format($totals['total'], 2) }}
                 </button>
             </form>
 

@@ -1,10 +1,14 @@
 # Eben Supply: Site Audit
 
-Commit hashes in the Status column refer to `KJMalaka/Eben-Supply-Prototype`, branch
-`fix/audit-kids-sales-promos`, where each fix was first built and tested. Each team member
-brings their area into this repository. Member 1 brought in A8, A9, A15, A17, A21 and A28.
+Two audits are recorded here:
 
-Audited on 3 November 2026.
+1. **3 November 2026, prototype** (the Issues table below). Commit hashes in its Status column refer to
+   `KJMalaka/Eben-Supply-Prototype`, branch `fix/audit-kids-sales-promos`, where each fix was first built,
+   and the tests it names are the prototype's. Each team member was to bring their area into this
+   repository.
+2. **6 November 2026, this repository** ([Audit of this repository](#audit-of-this-repository-6-november-2026)
+   at the end). It checks which of those fixes actually arrived here and lists what was fixed. **Read that
+   section for the current state of this repository.**
 
 ## Baseline
 
@@ -72,3 +76,46 @@ Status is updated after Phase 2.
 - Dashboard Total/Pending orders and product count match the database.
 - Mobile (375px): no horizontal scroll, hamburger menu opens and lists all links.
 - Browser console: no errors on any page visited.
+
+---
+
+## Audit of this repository (6 November 2026)
+
+Checked on branch `feature/template-redesign` by reading the code and by running each problem as a
+test. Every fix below is covered by `tests/Feature/AuditFixesTest.php` unless another test is named.
+
+### Prototype fixes: status in this repository
+
+| # | Status here | Covered by |
+|---|---|---|
+| A1 | **Was missing:** the total was frozen at the details step. **Fixed:** recalculated at payment from the live cart and prices; the payment page sends the total it showed, and a changed total is shown before charging. | `AuditFixesTest` |
+| A2, A3, A6, A11 | Present: stock checked and reduced under row locks in one transaction; sizes validated. | `CartCheckoutTest` |
+| A4, A10, A14 | Present: one-size stock, photo upload, product form validation. | `AdminAndStorePagesTest`, `KidsSectionTest` |
+| A5 | **Was missing:** deleting a product gave a 500 on the cart, checkout, My Orders and admin order pages. **Fixed:** deleted products are removed from carts with a message; order lines keep the product name (new `product_name` column) and load soft-deleted products. | `AuditFixesTest` |
+| A7, A12 | Present: guest cart merged on sign-in. | `CartCheckoutTest` |
+| A8, A9, A15, A17, A21, A28 | Present (Member 1). | `ProfilePageTest`, `ProductSeederTest` |
+| A13 | **Was inconsistent:** the cart page offered up to 10, the server allowed 20. **Fixed:** 10 everywhere (`CartItem::MAX_QUANTITY`), including repeated adds and guest-cart merges. | `AuditFixesTest` |
+| A16, A22, A24, A26, A27 | Present. | `ListingFiltersTest`, `KidsSectionTest` |
+| A23 | **Was missing:** the home stats still said "15+ Products / 3 Categories". **Fixed:** real product and category counts. | `AuditFixesTest` |
+| A30 | **Was missing:** order history counted lines, not items. **Fixed:** counts units. | `AuditFixesTest` |
+| A25 | **Was open.** **Fixed:** delivery orders say "Delivered" instead of "Collected" (tracker, badges, emails, admin status list). | `AuditFixesTest` |
+| A29 | **Was missing:** no admin navigation below desktop width. **Fixed:** a menu in the phone header. | `AuditFixesTest` |
+| A31 | **Was missing (with promo codes).** **Fixed:** `PromoCodeSeeder` runs outside production only. | — |
+
+### New issues found and fixed
+
+| # | Sev | Problem | Fix |
+|---|---|---|---|
+| B1 | Critical | Product pages showed sale prices, but the cart and checkout charged the full price. | Cart, checkout and order lines use `current_price`. |
+| B2 | Medium | Promo codes existed only in the prototype. | Ported: shopper apply/remove (rate-limited, once per customer), admin create/edit/deactivate, discount stored on orders and shown on order pages and emails. |
+| B3 | Medium | No branded error pages; `/admin` returned 404. | `resources/views/errors/` (403, 404, 419, 429, 500, 503) with a layout that needs no database; `/admin` redirects to the dashboard. |
+| B4 | Medium | No Contact, Delivery, Returns, Terms or Privacy pages. | Added and linked in the footer. **Drafts:** the store owner must review them, and set `STORE_EMAIL` / `STORE_PHONE` in `.env` before launch. |
+| B5 | Low | No `.env.example` (and `.gitignore` would have ignored one). | Added, with a `.gitignore` exception. |
+| B6 | Medium | Admin pages and the store's account menu looked broken: the compiled CSS was stale, and Flux followed the device's dark mode on a light-only site. | Rebuild after pulling (`npm run build`); `darkMode: 'class'` and `@fluxAppearance` removed. |
+| B7 | Medium | CI failed: `composer.lock` needed PHP 8.4, but the project and CI use 8.3. | `config.platform.php` pinned to 8.3 and the lock regenerated. |
+
+### Still open
+
+- Payments are simulated; a PayFast or Ozow merchant account is needed.
+- Emails go to the log until a mail service is configured.
+- The legal pages are drafts (see B4).

@@ -17,6 +17,11 @@ class Order extends Model
         'user_id',
         'status',
         'fulfillment',
+        'subtotal',
+        'discount_amount',
+        'delivery_fee',
+        'promo_code_id',
+        'promo_code',
         'total_amount',
         'contact_name',
         'contact_phone',
@@ -26,8 +31,31 @@ class Order extends Model
     ];
 
     protected $casts = [
-        'total_amount' => 'decimal:2',
+        'subtotal'        => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'total_amount'    => 'decimal:2',
     ];
+
+    public const DELIVERY_FEE = 60.00;
+
+    /**
+     * Money totals for a set of cart lines, worked out in cents to avoid
+     * rounding drift. A promo discount applies to the items only (at current,
+     * sale-inclusive prices), never to delivery, and can't go below zero.
+     */
+    public static function totalsFor($items, string $fulfillment, ?PromoCode $promo = null): array
+    {
+        $subtotal = (int) $items->sum(fn ($item) => (int) round($item->unit_price * 100) * $item->quantity);
+        $discount = $promo ? $promo->discountCents($subtotal) : 0;
+        $delivery = $fulfillment === 'delivery' ? (int) round(self::DELIVERY_FEE * 100) : 0;
+
+        return [
+            'subtotal'     => $subtotal / 100,
+            'discount'     => $discount / 100,
+            'delivery_fee' => $delivery / 100,
+            'total'        => (max(0, $subtotal - $discount) + $delivery) / 100,
+        ];
+    }
 
     // Order statuses — Hlomla Magopeni 218070349
     // Lifecycle: pending/paid -> confirmed -> ready -> collected, or cancelled
@@ -80,6 +108,25 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function promoCode()
+    {
+        return $this->belongsTo(PromoCode::class);
+    }
+
+    /** Items total before discount and delivery (older orders didn't store it). */
+    public function getItemsSubtotalAttribute(): float
+    {
+        return $this->subtotal !== null
+            ? (float) $this->subtotal
+            : (float) $this->items->sum(fn ($i) => $i->quantity * $i->unit_price);
+    }
+
+    /** "Collected" reads wrong for an order that was delivered. */
+    public function statusLabel(string $status): string
+    {
+        return $status === 'collected' && $this->fulfillment === 'delivery' ? 'Delivered' : ucfirst($status);
+    }
+
     public function getStatusBadgeAttribute(): array
     {
         return match($this->status) {
@@ -87,15 +134,20 @@ class Order extends Model
             'paid'      => ['label' => 'Paid',      'class' => 'status-paid'],
             'confirmed' => ['label' => 'Confirmed', 'class' => 'bg-blue-100 text-blue-800'],
             'ready'     => ['label' => 'Ready',     'class' => 'bg-green-100 text-green-800'],
-            'collected' => ['label' => 'Collected', 'class' => 'bg-gray-100 text-gray-800'],
+            'collected' => ['label' => $this->statusLabel('collected'), 'class' => 'bg-gray-100 text-gray-800'],
             'cancelled' => ['label' => 'Cancelled', 'class' => 'status-cancelled'],
             default     => ['label' => ucfirst($this->status), 'class' => 'bg-gray-100 text-gray-800'],
         };
     }
 
-    public function getDeliveryFeeAttribute(): float
+    // Stored on orders placed since promo codes were added; worked out for older ones.
+    public function getDeliveryFeeAttribute($value): float
     {
-        return $this->fulfillment === 'delivery' ? 60.00 : 0.00;
+        if ($this->subtotal !== null && $value !== null) {
+            return (float) $value;
+        }
+
+        return $this->fulfillment === 'delivery' ? self::DELIVERY_FEE : 0.00;
     }
 }
 

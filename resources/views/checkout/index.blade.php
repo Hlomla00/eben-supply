@@ -91,7 +91,7 @@
                                     <p class="text-xs text-stone-400">3–5 business days</p>
                                 </div>
                             </div>
-                            <p class="font-heading font-black text-[#333333] text-sm">R60.00</p>
+                            <p class="font-heading font-black text-[#333333] text-sm">R{{ number_format(\App\Models\Order::DELIVERY_FEE, 2) }}</p>
                         </div>
                     </label>
                 </div>
@@ -128,17 +128,21 @@
                                 @if($item->size)<p class="text-[10px] text-stone-400">{{ $item->size }}</p>@endif
                                 <p class="text-[10px] text-stone-400">Qty: {{ $item->quantity }}</p>
                             </div>
-                            <p class="text-xs font-heading font-bold text-[#333333] flex-shrink-0">R{{ number_format($item->quantity * $item->product->price, 2) }}</p>
+                            <p class="text-xs font-heading font-bold text-[#333333] flex-shrink-0">R{{ number_format($item->line_total, 2) }}</p>
                         </div>
                     @endforeach
                 </div>
                 <div class="border-t border-stone-100 pt-3 space-y-2 text-xs">
                     <div class="flex justify-between text-stone-500"><span>Subtotal</span><span>R{{ number_format($subtotal, 2) }}</span></div>
+                    @if($totals['discount'] > 0)
+                        <div class="flex justify-between text-emerald-700"><span>Discount ({{ $promo->code }})</span><span>−R{{ number_format($totals['discount'], 2) }}</span></div>
+                    @endif
                     <div class="flex justify-between text-stone-500"><span>Delivery</span><span id="delivery-fee-display" class="text-emerald-600">Free</span></div>
                     <div class="flex justify-between font-heading font-black text-sm border-t border-stone-100 pt-2 mt-1">
-                        <span>Total</span><span id="total-display">R{{ number_format($subtotal, 2) }}</span>
+                        <span>Total</span><span id="total-display">R{{ number_format($totals['total'], 2) }}</span>
                     </div>
                 </div>
+                <x-promo-code :promo="$promo" :error="$promoError" />
             </div>
         </div>
     </div>
@@ -150,7 +154,8 @@
     const addrDiv = document.getElementById('delivery-address');
     const feeEl   = document.getElementById('delivery-fee-display');
     const totalEl = document.getElementById('total-display');
-    const sub     = {{ $subtotal }};
+    const sub     = {{ $totals['total'] }}; // items after any promo discount
+    const fee     = {{ \App\Models\Order::DELIVERY_FEE }};
 
     // Same format as PHP number_format(x, 2): R1,186.00 — Hlomla Magopeni 218070349
     const rand = n => 'R' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -158,9 +163,9 @@
     radios.forEach(r => r.addEventListener('change', () => {
         const isDelivery = r.value === 'delivery' && r.checked;
         addrDiv.classList.toggle('hidden', !isDelivery);
-        feeEl.textContent   = isDelivery ? 'R60.00' : 'Free';
+        feeEl.textContent   = isDelivery ? rand(fee) : 'Free';
         feeEl.className     = isDelivery ? 'font-medium' : 'text-emerald-600';
-        totalEl.textContent = rand(isDelivery ? sub + 60 : sub);
+        totalEl.textContent = rand(isDelivery ? sub + fee : sub);
     }));
 </script>
 @endpush

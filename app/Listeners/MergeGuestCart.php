@@ -27,7 +27,7 @@ class MergeGuestCart
                 ->first();
 
             if ($existing) {
-                $existing->update(['quantity' => min(20, $existing->quantity + $guestItem->quantity)]);
+                $existing->update(['quantity' => min(CartItem::MAX_QUANTITY, $existing->quantity + $guestItem->quantity)]);
                 $guestItem->delete();
             } else {
                 $guestItem->update(['user_id' => $event->user->id, 'session_id' => null]);

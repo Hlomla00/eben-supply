@@ -28,14 +28,14 @@ class OrderPlaced extends Mailable
 
     public function content(): Content
     {
-        $subtotal = $this->order->items->sum(fn ($i) => $i->quantity * $i->unit_price);
+        $subtotal = $this->order->items_subtotal;
 
         return new Content(
             markdown: 'emails.orders.placed',
             with: [
                 'order'       => $this->order,
                 'subtotal'    => $subtotal,
-                'deliveryFee' => $this->order->total_amount - $subtotal,
+                'deliveryFee' => $this->order->delivery_fee,
             ],
         );
     }

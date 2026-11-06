@@ -4,7 +4,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\CartItem;
+use App\Models\Order;
 use App\Models\Product;
+use App\Models\PromoCode;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -19,10 +21,13 @@ class CartController extends Controller
 
     public function index()
     {
-        $cartItems = $this->getCartQuery()->with('product.sizes')->get();
-        $subtotal  = $cartItems->sum(fn($item) => $item->quantity * $item->product->price);
+        $cartItems = CartItem::currentItems();
+        $subtotal  = Order::totalsFor($cartItems, 'pickup')['subtotal'];
 
-        return view('cart.index', compact('cartItems', 'subtotal'));
+        [$promo, $promoError] = PromoCode::applied($subtotal, auth()->user(), session('pending_order.contact_email'));
+        $totals = Order::totalsFor($cartItems, 'pickup', $promo);
+
+        return view('cart.index', compact('cartItems', 'subtotal', 'totals', 'promo', 'promoError'));
     }
 
     public function add(Request $request)
@@ -30,7 +35,7 @@ class CartController extends Controller
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'size'       => 'nullable|string',
-            'quantity'   => 'required|integer|min:1|max:20',
+            'quantity'   => 'required|integer|min:1|max:' . CartItem::MAX_QUANTITY,
         ]);
 
         $product = Product::with('sizes')->findOrFail($request->product_id);
@@ -62,6 +67,10 @@ class CartController extends Controller
             return redirect()->back()->with('error', $this->stockMessage($product, $size, $available, $inCart));
         }
 
+        if ($inCart + $request->quantity > CartItem::MAX_QUANTITY) {
+            return redirect()->back()->with('error', 'You can have up to ' . CartItem::MAX_QUANTITY . ' of each item in your cart' . ($inCart ? " and you already have {$inCart}." : '.'));
+        }
+
         if ($existing) {
             $existing->increment('quantity', $request->quantity);
         } else {
@@ -75,7 +84,7 @@ class CartController extends Controller
     {
         $request->validate([
             'cart_item_id' => 'required|exists:cart_items,id',
-            'quantity'     => 'required|integer|min:1|max:20',
+            'quantity'     => 'required|integer|min:1|max:' . CartItem::MAX_QUANTITY,
         ]);
 
         $item = CartItem::with('product.sizes')->findOrFail($request->cart_item_id);
@@ -124,11 +133,9 @@ class CartController extends Controller
         return "Only {$available} of {$name} in stock.";
     }
 
+    // Lines whose product was deleted are not counted.
     public static function getCount(): int
     {
-        if (auth()->check()) {
-            return CartItem::where('user_id', auth()->id())->sum('quantity');
-        }
-        return CartItem::where('session_id', session()->getId())->sum('quantity');
+        return (int) CartItem::forCurrentShopper()->whereHas('product')->sum('quantity');
     }
 }

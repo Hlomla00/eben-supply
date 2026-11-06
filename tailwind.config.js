@@ -4,6 +4,11 @@ import forms from '@tailwindcss/forms';
 
 /** @type {import('tailwindcss').Config} */
 export default {
+    // The store has a light design only. With the default ('media'), Flux's
+    // dark: styles switch on whenever the device is in dark mode, which made
+    // the account button white-on-white and the menu text unreadable.
+    darkMode: 'class',
+
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         // Flux component templates: flux.css declares them with Tailwind 4's

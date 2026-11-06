@@ -11,7 +11,6 @@
     <title>{{ $pageTitle ? $pageTitle . ' | ' : '' }}Eben Supply — Woodstock, Cape Town</title>
 
     @include('partials.fonts')
-    @fluxAppearance
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-white text-[#333333] min-h-screen flex flex-col antialiased">
@@ -152,7 +151,7 @@
     {{-- ── Footer ── --}}
     <footer class="bg-[#333333] text-white mt-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-10">
                 <div class="sm:col-span-2">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-10 h-10 rounded-full overflow-hidden ring-2 ring-[#D4C7B0]">
@@ -190,6 +189,14 @@
                             <li><a href="{{ route('register') }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">Register</a></li>
                         @endauth
                         <li><a href="{{ route('cart.index') }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">Cart</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4 font-heading">Help</h4>
+                    <ul class="space-y-0 text-sm text-stone-300">
+                        @foreach([['Contact Us', 'pages.contact'], ['Delivery & Pickup', 'pages.shipping'], ['Returns & Refunds', 'pages.returns'], ['Terms & Conditions', 'pages.terms'], ['Privacy Policy', 'pages.privacy']] as [$label, $name])
+                            <li><a href="{{ route($name) }}" class="inline-block py-2 pr-3 hover:text-[#D4C7B0] transition-colors">{{ $label }}</a></li>
+                        @endforeach
                     </ul>
                 </div>
             </div>

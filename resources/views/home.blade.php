@@ -122,9 +122,9 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             @foreach([
-                ['15+', 'Products'],
-                ['3', 'Categories'],
-                ['R60', 'Flat Delivery'],
+                [$productCount, 'Products'],
+                [$categoryCount, 'Categories'],
+                ['R' . number_format(\App\Models\Order::DELIVERY_FEE), 'Flat Delivery'],
                 ['100%', 'Cape Town Made'],
             ] as [$num, $label])
             <div>

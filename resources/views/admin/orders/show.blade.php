@@ -25,7 +25,7 @@
                 <p class="font-heading font-black text-2xl text-[#333333]">{{ $order->payment_reference ?? '#' . $order->id }}</p>
                 <p class="text-xs text-stone-400 mt-1">{{ $order->created_at->format('d M Y, H:i') }}</p>
                 <span class="badge {{ $statusClasses[$order->status] ?? 'bg-stone-100 text-stone-500' }} mt-2 inline-block">
-                    {{ ucfirst($order->status) }}
+                    {{ $order->status_badge['label'] }}
                 </span>
             </div>
             {{-- Closed orders can't change; cancelling asks first — Hlomla Magopeni 218070349 --}}
@@ -37,7 +37,7 @@
                 @csrf @method('PUT')
                 <select name="status" class="form-input py-2 text-sm pr-8">
                     @foreach(\App\Models\Order::ADMIN_STATUSES as $s)
-                        <option value="{{ $s }}" {{ $order->status === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
+                        <option value="{{ $s }}" {{ $order->status === $s ? 'selected' : '' }}>{{ $order->statusLabel($s) }}</option>
                     @endforeach
                 </select>
                 <button type="submit" class="btn-primary text-xs px-5 py-2">Update</button>
@@ -89,10 +89,10 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-lg overflow-hidden bg-[#F5F5F5] flex-shrink-0">
-                                        <img loading="lazy" decoding="async" src="{{ $item->product->image_url }}"
+                                        <img loading="lazy" decoding="async" src="{{ $item->image_url }}"
                                              alt="" class="w-full h-full object-cover">
                                     </div>
-                                    <span class="font-medium text-[#333333]">{{ $item->product->name }}</span>
+                                    <span class="font-medium text-[#333333]">{{ $item->name }}</span>
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-stone-500 font-heading font-bold text-xs">{{ $item->size ?: '—' }}</td>
@@ -105,12 +105,18 @@
                 <tfoot>
                     <tr class="border-t border-stone-100">
                         <td colspan="4" class="px-6 py-3 text-right text-xs text-stone-400 font-heading font-bold uppercase tracking-wider">Subtotal</td>
-                        <td class="px-6 py-3 text-right font-heading font-bold text-[#333333]">R{{ number_format($order->items->sum('line_total'), 2) }}</td>
+                        <td class="px-6 py-3 text-right font-heading font-bold text-[#333333]">R{{ number_format($order->items_subtotal, 2) }}</td>
                     </tr>
+                    @if($order->discount_amount > 0)
+                        <tr>
+                            <td colspan="4" class="px-6 py-3 text-right text-xs text-emerald-700 font-heading font-bold uppercase tracking-wider">Discount{{ $order->promo_code ? ' (' . $order->promo_code . ')' : '' }}</td>
+                            <td class="px-6 py-3 text-right font-heading font-bold text-emerald-700">−R{{ number_format($order->discount_amount, 2) }}</td>
+                        </tr>
+                    @endif
                     @if($order->fulfillment === 'delivery')
                         <tr>
                             <td colspan="4" class="px-6 py-3 text-right text-xs text-stone-400 font-heading font-bold uppercase tracking-wider">Delivery</td>
-                            <td class="px-6 py-3 text-right font-heading font-bold text-[#333333]">R60.00</td>
+                            <td class="px-6 py-3 text-right font-heading font-bold text-[#333333]">R{{ number_format($order->delivery_fee, 2) }}</td>
                         </tr>
                     @endif
                     <tr class="border-t border-stone-200 bg-stone-50">
