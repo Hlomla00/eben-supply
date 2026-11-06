@@ -152,12 +152,15 @@
     const totalEl = document.getElementById('total-display');
     const sub     = {{ $subtotal }};
 
+    // Same format as PHP number_format(x, 2): R1,186.00 — Hlomla Magopeni 218070349
+    const rand = n => 'R' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
     radios.forEach(r => r.addEventListener('change', () => {
         const isDelivery = r.value === 'delivery' && r.checked;
         addrDiv.classList.toggle('hidden', !isDelivery);
         feeEl.textContent   = isDelivery ? 'R60.00' : 'Free';
         feeEl.className     = isDelivery ? 'font-medium' : 'text-emerald-600';
-        totalEl.textContent = 'R' + (isDelivery ? sub + 60 : sub).toFixed(2);
+        totalEl.textContent = rand(isDelivery ? sub + 60 : sub);
     }));
 </script>
 @endpush
