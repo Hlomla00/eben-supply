@@ -23,7 +23,11 @@
                             @if($item->size)
                                 <span class="inline-block text-xs text-stone-400 bg-stone-50 border border-stone-100 rounded-full px-2 py-0.5 mb-2">Size: {{ $item->size }}</span>
                             @endif
-                            <p class="font-heading font-black text-[#333333]">R{{ number_format($item->product->price, 2) }}</p>
+                            @if($item->product->isOnSale())
+                                <p class="font-heading font-black text-red-600">R{{ number_format($item->unit_price, 2) }} <span class="text-xs font-medium text-stone-400 line-through">R{{ number_format($item->product->price, 2) }}</span></p>
+                            @else
+                                <p class="font-heading font-black text-[#333333]">R{{ number_format($item->unit_price, 2) }}</p>
+                            @endif
                         </div>
                         <div class="flex flex-col items-end justify-between">
                             <form action="{{ route('cart.update') }}" method="POST">
@@ -31,13 +35,13 @@
                                 <input type="hidden" name="cart_item_id" value="{{ $item->id }}">
                                 <select name="quantity" onchange="this.form.submit()"
                                         class="border border-stone-200 rounded-lg text-sm text-[#333333] pl-3 pr-9 py-1.5 min-w-[4.5rem] focus:outline-none focus:ring-2 focus:ring-[#D4C7B0] bg-white font-heading">
-                                    @php $maxQty = max($item->quantity, min(10, $item->product->availableStock($item->size))); @endphp
+                                    @php $maxQty = max($item->quantity, min(\App\Models\CartItem::MAX_QUANTITY, $item->product->availableStock($item->size))); @endphp
                                     @for($i = 1; $i <= $maxQty; $i++)
                                         <option value="{{ $i }}" {{ $item->quantity == $i ? 'selected' : '' }}>{{ $i }}</option>
                                     @endfor
                                 </select>
                             </form>
-                            <p class="font-heading font-bold text-sm text-stone-600">R{{ number_format($item->quantity * $item->product->price, 2) }}</p>
+                            <p class="font-heading font-bold text-sm text-stone-600">R{{ number_format($item->line_total, 2) }}</p>
                             <form action="{{ route('cart.remove') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="cart_item_id" value="{{ $item->id }}">
@@ -61,15 +65,23 @@
                             <span>Subtotal ({{ $cartItems->sum('quantity') }} items)</span>
                             <span>R{{ number_format($subtotal, 2) }}</span>
                         </div>
+                        @if($totals['discount'] > 0)
+                            <div class="flex justify-between text-emerald-700">
+                                <span>Discount ({{ $promo->code }})</span>
+                                <span>−R{{ number_format($totals['discount'], 2) }}</span>
+                            </div>
+                        @endif
                         <div class="flex justify-between text-stone-500">
                             <span>Delivery</span>
                             <span class="text-emerald-600 font-medium">Calculated at checkout</span>
                         </div>
                     </div>
 
+                    <div class="mb-5"><x-promo-code :promo="$promo" :error="$promoError" /></div>
+
                     <div class="border-t border-stone-100 pt-4 mb-5 flex justify-between font-heading font-black text-base">
-                        <span>Subtotal</span>
-                        <span class="text-[#333333]">R{{ number_format($subtotal, 2) }}</span>
+                        <span>Total before delivery</span>
+                        <span class="text-[#333333]">R{{ number_format($totals['total'], 2) }}</span>
                     </div>
 
                     @auth

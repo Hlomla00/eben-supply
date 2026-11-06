@@ -36,7 +36,7 @@ class HomeController extends Controller
         $featuredProducts = $pinned->merge($extras)->shuffle();
 
         $productCount  = Product::count();
-        $categoryCount = count(Product::CATEGORIES);
+        $categoryCount = count(Product::categoriesInUse()); // same categories as the menu
 
         return view('home', compact('featuredProducts', 'productCount', 'categoryCount'));
     }

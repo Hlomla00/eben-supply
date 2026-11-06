@@ -64,7 +64,7 @@ class AdminAndStorePagesTest extends TestCase
         $this->actingAs(User::factory()->create(['role' => 'admin']))
             ->post('/admin/products', [
                 'name' => 'New Cap', 'category' => 'cap', 'price' => 199.00,
-                'sizes' => ['S' => 2, 'M' => 3],
+                'sizing' => 'sized', 'sizes' => ['S' => 2, 'M' => 3], 'image' => $this->fakeImage(),
             ])
             ->assertRedirect(route('admin.products.index'));
 
@@ -80,7 +80,7 @@ class AdminAndStorePagesTest extends TestCase
         $this->actingAs(User::factory()->create(['role' => 'admin']))
             ->put("/admin/products/{$product->id}", [
                 'name' => 'Smoke Tee v2', 'category' => 'tshirt', 'price' => 310.00,
-                'sizes' => ['M' => 6, 'L' => 2],
+                'sizing' => 'sized', 'sizes' => ['M' => 6, 'L' => 2], 'image' => $this->fakeImage(),
             ])
             ->assertRedirect(route('admin.products.index'));
 

@@ -10,9 +10,12 @@ We have received your order. Keep this reference to track it:
 | Item | Qty | Price |
 |:-----|:---:|------:|
 @foreach($order->items as $item)
-| {{ $item->product?->name ?? 'Product' }}{{ $item->size ? ' ('.$item->size.')' : '' }} | {{ $item->quantity }} | R{{ number_format($item->quantity * $item->unit_price, 2) }} |
+| {{ $item->name }}{{ $item->size ? ' ('.$item->size.')' : '' }} | {{ $item->quantity }} | R{{ number_format($item->quantity * $item->unit_price, 2) }} |
 @endforeach
 | Subtotal | | R{{ number_format($subtotal, 2) }} |
+@if($order->discount_amount > 0)
+| Discount{{ $order->promo_code ? ' ('.$order->promo_code.')' : '' }} | | −R{{ number_format($order->discount_amount, 2) }} |
+@endif
 | Delivery | | {{ $order->fulfillment === 'pickup' ? 'Free (pickup)' : 'R'.number_format($deliveryFee, 2) }} |
 | **Total paid** | | **R{{ number_format($order->total_amount, 2) }}** |
 </x-mail::table>

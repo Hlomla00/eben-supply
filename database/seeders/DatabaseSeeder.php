@@ -13,5 +13,11 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ProductSeeder::class,
         ]);
+
+        // Demo promo codes (some expired or used up, for testing). They give
+        // real discounts, so they are only created outside production.
+        if (!app()->isProduction()) {
+            $this->call(PromoCodeSeeder::class);
+        }
     }
 }

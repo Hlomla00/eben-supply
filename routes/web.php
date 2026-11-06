@@ -7,10 +7,12 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PromoCodeController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\InventoryController;
+use App\Http\Controllers\Admin\PromoCodeController as AdminPromoCodeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,6 +32,15 @@ Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
 Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/promo', [PromoCodeController::class, 'apply'])->name('promo.apply');
+Route::delete('/cart/promo', [PromoCodeController::class, 'remove'])->name('promo.remove');
+
+// Store information pages
+Route::view('/contact', 'pages.contact')->name('pages.contact');
+Route::view('/shipping', 'pages.shipping')->name('pages.shipping');
+Route::view('/returns', 'pages.returns')->name('pages.returns');
+Route::view('/terms', 'pages.terms')->name('pages.terms');
+Route::view('/privacy', 'pages.privacy')->name('pages.privacy');
 
 /*
 |--------------------------------------------------------------------------
@@ -57,9 +68,10 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', fn () => redirect()->route('admin.dashboard'));
     Route::get('/admin-dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-   Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
+    Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
     Route::get('/products/create', [AdminProductController::class, 'create'])->name('products.create');
     Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');
     Route::get('/products/{product}/edit', [AdminProductController::class, 'edit'])->name('products.edit');
@@ -74,7 +86,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory');
     Route::post('/inventory', [InventoryController::class, 'update'])->name('inventory.update');
-    
+
+    // Promo codes: no delete route; codes are switched off so past orders keep them.
+    Route::get('/promos', [AdminPromoCodeController::class, 'index'])->name('promos.index');
+    Route::get('/promos/create', [AdminPromoCodeController::class, 'create'])->name('promos.create');
+    Route::post('/promos', [AdminPromoCodeController::class, 'store'])->name('promos.store');
+    Route::get('/promos/{promo}/edit', [AdminPromoCodeController::class, 'edit'])->name('promos.edit');
+    Route::put('/promos/{promo}', [AdminPromoCodeController::class, 'update'])->name('promos.update');
+    Route::post('/promos/{promo}/toggle', [AdminPromoCodeController::class, 'toggle'])->name('promos.toggle');
 });
 
 require __DIR__.'/auth.php';

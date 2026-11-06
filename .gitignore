@@ -28,3 +28,4 @@ Thumbs.db
 # Ignore environment files
 .env
 .env.*
+!.env.example

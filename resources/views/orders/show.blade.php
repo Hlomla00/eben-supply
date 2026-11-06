@@ -19,7 +19,7 @@
     @php
         // First step reads Pending or Paid, whichever the order has — Hlomla Magopeni 218070349
         $steps = \App\Models\Order::TRACKING_STEPS;
-        $stepLabels = [$order->status === 'pending' ? 'Pending' : 'Paid', 'Confirmed', 'Ready', 'Collected'];
+        $stepLabels = [$order->status === 'pending' ? 'Pending' : 'Paid', 'Confirmed', 'Ready', $order->statusLabel('collected')];
         $currentStep = $order->status === 'pending' ? 0 : array_search($order->status, $steps);
     @endphp
 
@@ -84,10 +84,10 @@
             @foreach($order->items as $item)
                 <div class="flex items-center gap-4 pb-4 border-b border-stone-100 last:border-0 last:pb-0">
                     <div class="w-16 h-16 rounded-xl overflow-hidden bg-[#F5F5F5] flex-shrink-0">
-                        <img loading="lazy" decoding="async" src="{{ $item->product->image_url }}" alt="" class="w-full h-full object-cover">
+                        <img loading="lazy" decoding="async" src="{{ $item->image_url }}" alt="" class="w-full h-full object-cover">
                     </div>
                     <div class="flex-1">
-                        <p class="font-heading font-semibold text-sm text-[#333333]">{{ $item->product->name }}</p>
+                        <p class="font-heading font-semibold text-sm text-[#333333]">{{ $item->name }}</p>
                         @if($item->size)<p class="text-xs text-stone-400">Size: {{ $item->size }}</p>@endif
                         <p class="text-xs text-stone-400">R{{ number_format($item->unit_price, 2) }} × {{ $item->quantity }}</p>
                     </div>
@@ -96,14 +96,7 @@
             @endforeach
         </div>
 
-        @php $subtotal = $order->items->sum('line_total'); @endphp
-        <div class="border-t border-stone-100 mt-4 pt-4 space-y-2 text-sm">
-            <div class="flex justify-between text-stone-500"><span>Subtotal</span><span>R{{ number_format($subtotal, 2) }}</span></div>
-            <div class="flex justify-between text-stone-500"><span>Delivery</span><span>{{ $order->fulfillment === 'delivery' ? 'R60.00' : 'Free (Pickup)' }}</span></div>
-            <div class="flex justify-between font-heading font-black border-t border-stone-100 pt-2">
-                <span>Total</span><span>R{{ number_format($order->total_amount, 2) }}</span>
-            </div>
-        </div>
+        @include('orders._totals', ['class' => 'mt-4'])
     
     </div>
 </div>
