@@ -14,7 +14,8 @@ class DashboardController extends Controller
     public function index()
     {
         $totalOrders    = Order::count();
-        $pendingOrders  = Order::where('status', 'pending')->count();
+        // New orders start as "paid"; both still need the store to act — Hlomla Magopeni 218070349
+        $pendingOrders  = Order::whereIn('status', ['pending', 'paid'])->count();
         $totalProducts  = Product::count();
         $lowStockCount  = Product::where('stock_quantity', '<', 5)->count();
         $recentOrders   = Order::with('user')->latest()->take(5)->get();

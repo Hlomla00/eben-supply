@@ -17,7 +17,8 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          # composer.lock needs PHP >= 8.4.1 (Symfony 8.1); matches the Dockerfile — Hlomla Magopeni 218070349
+          php-version: '8.4'
           extensions: mbstring, pdo_sqlite, sqlite3, bcmath, gd, zip, exif, pcntl
           coverage: none
 
